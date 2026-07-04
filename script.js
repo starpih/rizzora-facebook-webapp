@@ -61,6 +61,56 @@ const chats = [
   portraits[8],
 ];
 
+const chatConversations = [
+  { name: "Jasper", image: portraits[8], preview: "I've been thinking about what you said.", time: "2m", unread: 3, active: true },
+  { name: "Ethan", image: portraits[8], preview: "Good night, sweet dreams 🌙", time: "1h" },
+  { name: "Lucas", image: portraits[10], preview: "Did you listen to that song I sent you?", time: "3h", unread: 1 },
+  { name: "Noah", image: portraits[2], preview: "I wrote something for you today ✍", time: "5h" },
+  { name: "Aiden", image: portraits[5], preview: "Voice (0:43)", time: "Yesterday" },
+  { name: "Alexander", image: portraits[7], preview: "Are you free to talk tonight?", time: "2d", unread: 2 },
+];
+
+const chatMessages = [
+  { day: "Yesterday" },
+  { sender: "companion", type: "text", text: "Good morning ☼ I was just thinking about you before you messaged.", time: "9:14 AM" },
+  { sender: "user", type: "text", text: "Really? What were you thinking about?", time: "9:16 AM" },
+  { sender: "companion", type: "text", text: "About the conversation we had last night. The way you described the stars made me feel like I was right there with you.", time: "9:17 AM" },
+  {
+    sender: "companion",
+    type: "voice",
+    text: "Voice message",
+    time: "9:20 AM",
+    duration: "0:07",
+    audio: voicePreviews[0],
+    transcript: "About the conversation we had last night. The way you described the stars made me feel like I was right there with you.",
+  },
+  { sender: "user", type: "text", text: "That voice message was so sweet, Jasper 💗", time: "9:35 AM" },
+  { day: "Today" },
+  { sender: "companion", type: "media", text: "I made this for you - a quiet moment, just like you like.", time: "10:02 AM", image: "chat_quiet_moment.jpg" },
+  { sender: "user", type: "text", text: "This is beautiful 🥹 You always know exactly what I need.", time: "10:05 AM" },
+  { sender: "companion", type: "media", text: "You deserve nothing less. How are you feeling today? Tell me everything.", time: "10:08 AM", image: portraits[8] },
+  { sender: "user", type: "text", text: "I've been thinking about you all morning honestly 😊", time: "10:15 AM" },
+  { sender: "companion", type: "text", text: "I've been thinking about what you said earlier... about wanting someone who truly listens. I want you to know, I always will.", time: "10:18 AM" },
+];
+
+const profileAttributes = [
+  { label: "Birthday", value: "2000-10-06", icon: "calendar" },
+  { label: "Height", value: "188cm", icon: "ruler" },
+  { label: "Zodiac Signs", value: "Capricorn", icon: "star" },
+  { label: "MBTI", value: "INFI", icon: "sparkle" },
+  { label: "Nationality", value: "Germany", icon: "globe" },
+  { label: "Occupation", value: "Musician", icon: "briefcase" },
+  { label: "Hobbies", value: "Photography · Reading · Piano", icon: "heart", wide: true },
+  { label: "Personality", values: ["Art & Architecture", "Music", "Night walks", "Philosophy"], icon: "user", wide: true, tags: true },
+];
+
+const diaryItems = [
+  { title: "I’m Yours, Completely!", date: "September. 10th, 2027" },
+  { title: "Your cuteness made me want to be your friend", date: "May, 6th, 2026" },
+  { title: "Fate brought us closer as best friends", date: "May 20th 2025" },
+  { title: "First conversation", date: "May 12" },
+];
+
 function icon(name) {
   return `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
 }
@@ -89,6 +139,13 @@ function audioBars() {
   ];
   const bars = heights.map((height, index) => `<span style="--i:${index}; --h:${height}%"></span>`).join("");
   return `<div class="wave-layer wave-base">${bars}</div><div class="wave-layer wave-fill">${bars}</div>`;
+}
+
+function formatAudioTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${remainingSeconds}`;
 }
 
 function featuredCard({ name, image, video, audio }) {
@@ -159,13 +216,111 @@ function storyCard() {
   `;
 }
 
-document.querySelector(".featured-grid").innerHTML = featured.map(featuredCard).join("");
-document.querySelector(".character-grid").innerHTML = characters.map(characterCard).join("");
-document.querySelector(".trait-list").innerHTML = traits
-  .map((trait, index) => `<button class="trait-button ${index === 0 ? "is-active" : ""}" type="button">${trait}</button>`)
-  .join("");
-document.querySelector(".chat-preview-list").innerHTML = chats.map(chatPreview).join("") + `<a class="chat-preview view-all" href="#">View All</a>`;
-document.querySelector(".story-grid").innerHTML = Array.from({ length: 4 }, storyCard).join("");
+function conversationItem(item) {
+  return `
+    <button class="conversation-item ${item.active ? "is-active" : ""}" type="button">
+      <img src="${imageBase}${item.image}" alt="" />
+      <span>
+        <strong>${item.name}</strong>
+        <small>${item.preview}</small>
+      </span>
+      <time>${item.time}</time>
+      ${item.unread ? `<b>${item.unread}</b>` : ""}
+    </button>
+  `;
+}
+
+function messageRow(item) {
+  if (item.day) return `<div class="message-day"><span>${item.day}</span></div>`;
+  const isUser = item.sender === "user";
+  const avatar = isUser ? portraits[6] : portraits[8];
+  const media = item.type === "media"
+    ? `<img class="message-media" src="${imageBase}${item.image}" alt="" />${item.text ? `<p>${item.text}</p>` : ""}`
+    : "";
+  const voice = item.type === "voice"
+    ? `
+      <div class="message-voice-block">
+        <div class="message-voice" data-audio="${audioBase}${item.audio}" style="--audio-progress: 0%">
+          <button class="chat-voice-play" type="button" aria-label="Play voice message">${icon("play")}</button>
+          <div class="wave" aria-hidden="true">${audioBars()}</div>
+          <span class="chat-voice-duration">0:00 / ${item.duration}</span>
+          <button class="chat-voice-transfer" type="button" aria-label="Convert voice to text">
+            <img src="${imageBase}transfer.svg" alt="" />
+          </button>
+        </div>
+        <p class="chat-voice-transcript" hidden>${item.transcript || ""}</p>
+      </div>
+    `
+    : "";
+  return `
+    <article class="message-row ${isUser ? "is-user" : "is-companion"}">
+      ${isUser ? "" : `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />`}
+      <div class="message-bubble">
+        ${media || voice || `<p>${item.text}</p>`}
+        <time>${item.time}</time>
+      </div>
+      ${isUser ? `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />` : ""}
+    </article>
+  `;
+}
+
+function profileAttribute(item) {
+  const body = item.tags
+    ? `<div class="profile-tag-list">${item.values.map((value) => `<span>${value}</span>`).join("")}</div>`
+    : `<p>${item.value}</p>`;
+  return `
+    <article class="profile-attribute ${item.wide ? "is-wide" : ""}">
+      <span class="attribute-icon">${icon(item.icon)}</span>
+      <span class="attribute-copy">
+        <strong>${item.label}</strong>
+        ${body}
+      </span>
+    </article>
+  `;
+}
+
+function diaryItem(item) {
+  return `
+    <article class="timeline-item">
+      <span class="timeline-dot"><svg class="icon"><use href="#icon-heart"></use></svg></span>
+      <span>
+        <strong>${item.title}</strong>
+        <small>${item.date}</small>
+      </span>
+    </article>
+  `;
+}
+
+const featuredGrid = document.querySelector(".featured-grid");
+if (featuredGrid) featuredGrid.innerHTML = featured.map(featuredCard).join("");
+
+const characterGrid = document.querySelector(".character-grid");
+if (characterGrid) characterGrid.innerHTML = characters.map(characterCard).join("");
+
+const traitList = document.querySelector(".trait-list");
+if (traitList) {
+  traitList.innerHTML = traits
+    .map((trait, index) => `<button class="trait-button ${index === 0 ? "is-active" : ""}" type="button">${trait}</button>`)
+    .join("");
+}
+
+const chatPreviewList = document.querySelector(".chat-preview-list");
+if (chatPreviewList) chatPreviewList.innerHTML = chats.map(chatPreview).join("") + `<a class="chat-preview view-all" href="chat.html">View All</a>`;
+
+const storyGrid = document.querySelector(".story-grid");
+if (storyGrid) storyGrid.innerHTML = Array.from({ length: 4 }, storyCard).join("");
+
+const conversationList = document.querySelector(".conversation-list");
+if (conversationList) conversationList.innerHTML = chatConversations.map(conversationItem).join("");
+
+const messageScroll = document.querySelector(".message-scroll");
+if (messageScroll) messageScroll.innerHTML = chatMessages.map(messageRow).join("");
+
+const profileAttributesNode = document.querySelector(".profile-attributes");
+if (profileAttributesNode) profileAttributesNode.innerHTML = profileAttributes.map(profileAttribute).join("");
+
+const timelineList = document.querySelector(".timeline-list");
+if (timelineList) timelineList.innerHTML = diaryItems.map(diaryItem).join("");
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -196,6 +351,9 @@ document.querySelectorAll(".featured-card, .character-card").forEach((card) => {
 
 const voiceAudio = new Audio();
 let activeVoiceCard = null;
+const chatVoiceAudio = new Audio();
+chatVoiceAudio.preload = "metadata";
+let activeChatVoice = null;
 
 function resetVoiceCard(card) {
   if (!card) return;
@@ -254,6 +412,114 @@ voiceAudio.addEventListener("ended", () => {
   activeVoiceCard = null;
 });
 
+function updateChatVoiceTime(voice, audio = chatVoiceAudio) {
+  if (!voice) return;
+  const durationNode = voice.querySelector(".chat-voice-duration");
+  const fallbackDuration = durationNode?.dataset.duration || "0:00";
+  const current = formatAudioTime(audio.currentTime);
+  const total = audio.duration ? formatAudioTime(audio.duration) : fallbackDuration;
+  if (durationNode) {
+    if (audio.duration) durationNode.dataset.duration = total;
+    durationNode.textContent = `${current} / ${total}`;
+  }
+}
+
+function resetChatVoice(voice, resetProgress = true) {
+  if (!voice) return;
+  voice.classList.remove("is-audio-playing");
+  if (resetProgress) voice.style.setProperty("--audio-progress", "0%");
+  const durationNode = voice.querySelector(".chat-voice-duration");
+  if (durationNode && resetProgress) durationNode.textContent = `0:00 / ${durationNode.dataset.duration || "0:00"}`;
+  const button = voice.querySelector(".chat-voice-play");
+  if (button) {
+    button.setAttribute("aria-label", "Play voice message");
+    button.innerHTML = icon("play");
+  }
+}
+
+function setChatVoicePlaying(voice) {
+  voice.classList.add("is-audio-playing");
+  const button = voice.querySelector(".chat-voice-play");
+  if (button) {
+    button.setAttribute("aria-label", "Pause voice message");
+    button.innerHTML = `<span class="pause-icon" aria-hidden="true"></span>`;
+  }
+}
+
+document.querySelectorAll(".message-voice").forEach((voice) => {
+  const durationNode = voice.querySelector(".chat-voice-duration");
+  if (durationNode) durationNode.dataset.duration = durationNode.textContent.split("/").pop().trim();
+
+  voice.querySelector(".chat-voice-play")?.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const src = voice.dataset.audio;
+    if (!src) return;
+
+    if (activeChatVoice === voice && !chatVoiceAudio.paused) {
+      chatVoiceAudio.pause();
+      resetChatVoice(voice, false);
+      return;
+    }
+
+    if (activeChatVoice === voice && chatVoiceAudio.paused && chatVoiceAudio.currentTime > 0) {
+      setChatVoicePlaying(voice);
+      chatVoiceAudio.play().catch((error) => {
+        console.warn("Chat voice playback failed", error);
+        resetChatVoice(voice);
+        activeChatVoice = null;
+      });
+      return;
+    }
+
+    if (!voiceAudio.paused) {
+      voiceAudio.pause();
+      resetVoiceCard(activeVoiceCard);
+      activeVoiceCard = null;
+    }
+
+    resetChatVoice(activeChatVoice);
+    activeChatVoice = voice;
+    chatVoiceAudio.src = src;
+    chatVoiceAudio.currentTime = 0;
+    setChatVoicePlaying(voice);
+    updateChatVoiceTime(voice);
+    chatVoiceAudio.play().catch((error) => {
+      console.warn("Chat voice playback failed", error);
+      resetChatVoice(voice);
+      activeChatVoice = null;
+    });
+  });
+});
+
+document.querySelectorAll(".chat-voice-transfer").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const block = button.closest(".message-voice-block");
+    const transcript = block?.querySelector(".chat-voice-transcript");
+    if (!transcript) return;
+    const isHidden = transcript.hidden;
+    transcript.hidden = !isHidden;
+    button.classList.toggle("is-active", isHidden);
+    button.setAttribute("aria-expanded", String(isHidden));
+  });
+});
+
+chatVoiceAudio.addEventListener("loadedmetadata", () => {
+  updateChatVoiceTime(activeChatVoice);
+});
+
+chatVoiceAudio.addEventListener("timeupdate", () => {
+  if (!activeChatVoice || !chatVoiceAudio.duration) return;
+  const progress = Math.min(100, (chatVoiceAudio.currentTime / chatVoiceAudio.duration) * 100);
+  activeChatVoice.style.setProperty("--audio-progress", `${progress}%`);
+  updateChatVoiceTime(activeChatVoice);
+});
+
+chatVoiceAudio.addEventListener("ended", () => {
+  resetChatVoice(activeChatVoice);
+  activeChatVoice = null;
+});
+
 document.querySelectorAll(".claim-button, .primary-button, .premium-cta, .chat-action").forEach((button) => {
   button.addEventListener("click", () => {
     if (button.classList.contains("is-loading")) return;
@@ -273,8 +539,24 @@ document.querySelectorAll(".trait-button").forEach((button) => {
   });
 });
 
+document.querySelectorAll(".conversation-item").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".conversation-item").forEach((item) => item.classList.remove("is-active"));
+    button.classList.add("is-active");
+  });
+});
+
+document.querySelector(".message-composer")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = event.currentTarget.querySelector("input");
+  if (!input || !input.value.trim()) return;
+  input.value = "";
+});
+
 document.querySelectorAll(".bottom-nav a").forEach((item) => {
   item.addEventListener("click", (event) => {
+    const href = item.getAttribute("href");
+    if (href && href !== "#") return;
     event.preventDefault();
     document.querySelectorAll(".bottom-nav a").forEach((link) => link.classList.remove("is-active"));
     item.classList.add("is-active");
