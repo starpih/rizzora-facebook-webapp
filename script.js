@@ -546,6 +546,43 @@ document.querySelectorAll(".conversation-item").forEach((button) => {
   });
 });
 
+const profileHero = document.querySelector(".profile-hero");
+const profileThumbTrack = document.querySelector(".profile-thumbs");
+
+document.querySelectorAll(".profile-thumbs button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const image = button.querySelector("img");
+    if (!image || !profileHero) return;
+    profileHero.src = image.src;
+    document.querySelectorAll(".profile-thumbs button").forEach((item) => item.classList.remove("is-active"));
+    button.classList.add("is-active");
+    if (profileThumbTrack) {
+      const trackRect = profileThumbTrack.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const leftOverflow = buttonRect.left - trackRect.left;
+      const rightOverflow = buttonRect.right - trackRect.right;
+
+      if (leftOverflow < 0 || rightOverflow > 0) {
+        profileThumbTrack.scrollBy({
+          left: leftOverflow < 0 ? leftOverflow : rightOverflow,
+          behavior: "smooth",
+        });
+      }
+    }
+  });
+});
+
+document.querySelectorAll(".profile-gallery-nav").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!profileThumbTrack) return;
+    const direction = Number(button.dataset.galleryDirection || 1);
+    const firstThumb = profileThumbTrack.querySelector("button");
+    const gap = Number.parseFloat(getComputedStyle(profileThumbTrack).columnGap || "0");
+    const step = firstThumb ? firstThumb.getBoundingClientRect().width + gap : 74;
+    profileThumbTrack.scrollBy({ left: direction * step, behavior: "smooth" });
+  });
+});
+
 document.querySelector(".message-composer")?.addEventListener("submit", (event) => {
   event.preventDefault();
   const input = event.currentTarget.querySelector("input");

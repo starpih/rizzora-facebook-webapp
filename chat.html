@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rizzora Chat</title>
-    <link rel="stylesheet" href="styles.css?v=chat-voice-transfer-20260705" />
+    <link rel="stylesheet" href="styles.css?v=sidebar-offer-composer-20260706" />
   </head>
   <body class="chat-page">
     <svg aria-hidden="true" class="svg-sprite">
@@ -16,6 +16,8 @@
       <symbol id="icon-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4V10Zm8 0v10M3.5 7h17v3h-17V7Zm8.5 0C11.6 5.2 10.5 4 9.1 4 8 4 7.2 4.8 7.2 5.8 7.2 7 8.6 7 12 7Zm0 0c.4-1.8 1.5-3 2.9-3 1.1 0 1.9.8 1.9 1.8C16.8 7 15.4 7 12 7Z" /></symbol>
       <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5v5l3.3 2" /></symbol>
       <symbol id="icon-more" viewBox="0 0 24 24"><path d="M12 6.5h.01M12 12h.01M12 17.5h.01" /></symbol>
+      <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
+      <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></symbol>
       <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.2" /><path d="m15.4 15.4 4.1 4.1" /></symbol>
       <symbol id="icon-play" viewBox="0 0 24 24"><path d="m9 7 8 5-8 5V7Z" /></symbol>
       <symbol id="icon-send" viewBox="0 0 24 24"><path d="m4 12 15.5-7-4.8 15-3.1-6.2L4 12Zm7.6 1.8 7.9-8.8" /></symbol>
@@ -41,14 +43,14 @@
           <nav class="nav-list" aria-label="Main">
             <a class="nav-item" href="index.html"><svg class="icon"><use href="#icon-home" /></svg>Home</a>
             <a class="nav-item" href="#"><svg class="icon"><use href="#icon-heart" /></svg>For You</a>
-            <a class="nav-item" href="#"><svg class="icon"><use href="#icon-magic" /></svg>My Wish</a>
+            <a class="nav-item" href="#"><img class="nav-icon-img" src="images/icon/creation_icon.svg" alt="" />My Wish</a>
             <a class="nav-item is-active" href="chat.html"><svg class="icon"><use href="#icon-chat" /></svg>Message <span class="pill">23</span></a>
           </nav>
           <div class="chat-preview-list" aria-label="Recent chats"></div>
         </div>
         <div class="sidebar-footer">
           <button class="premium-cta" type="button">
-            <svg class="icon premium-icon" aria-hidden="true"><use href="#icon-crown" /></svg>
+            <span class="premium-icon" aria-hidden="true"></span>
             <span>
               <strong>Premium</strong>
               <small>Endless Surprises</small>
@@ -56,9 +58,9 @@
             <span class="discount">-50%</span>
           </button>
           <div class="socials" aria-label="Social links">
-            <span>ig</span>
-            <span>x</span>
-            <span>tt</span>
+            <img src="images/icon/Social_Icons_ins.svg" alt="Instagram" />
+            <img src="images/icon/Social_Icons_X.svg" alt="X" />
+            <img src="images/icon/Social_Icons_TK.svg" alt="TikTok" />
           </div>
         </div>
       </aside>
@@ -69,7 +71,7 @@
             <span class="offer-label"><svg class="icon"><use href="#icon-gift" /></svg>Special Offer</span>
             <span class="timer"><svg class="icon"><use href="#icon-clock" /></svg>23:21:43</span>
             <span class="offer-copy">Get up to 70% OFF on Premium Subscription</span>
-            <button class="claim-button" type="button"><svg class="icon"><use href="#icon-crown" /></svg>Claim Offer</button>
+            <button class="claim-button" type="button"><span class="claim-icon" aria-hidden="true"></span>Claim Offer</button>
           </div>
           <div class="account">
             <img src="images/微信图片_20260605210259_381_1496.jpg" alt="" />
@@ -131,17 +133,22 @@
           </section>
 
           <aside class="profile-panel" aria-label="Companion profile">
-            <div class="profile-media">
-              <img class="profile-hero" src="images/微信图片_20260605212128_433_1496.jpg" alt="Jasper portrait" />
-              <button class="profile-zoom" type="button" aria-label="View full portrait"><svg class="icon"><use href="#icon-plus" /></svg></button>
-            </div>
-            <div class="profile-thumbs" aria-label="Profile gallery">
-              <button class="is-active" type="button"><img src="images/微信图片_20260605212128_433_1496.jpg" alt="" /></button>
-              <button type="button"><img src="images/微信图片_20260605210259_381_1496.jpg" alt="" /></button>
-              <button type="button"><img src="images/微信图片_20260605210301_384_1496.jpg" alt="" /></button>
-              <button class="is-locked" type="button" aria-label="Locked photo"><img src="images/微信图片_20260605204955_333_1496.jpg" alt="" /><span><svg class="icon"><use href="#icon-crown" /></svg></span></button>
-            </div>
             <div class="profile-scroll">
+              <div class="profile-media">
+                <img class="profile-hero" src="images/微信图片_20260605212128_433_1496.jpg" alt="Jasper portrait" />
+                <button class="profile-zoom" type="button" aria-label="View full portrait"><svg class="icon"><use href="#icon-plus" /></svg></button>
+              </div>
+              <div class="profile-gallery" aria-label="Profile gallery">
+                <button class="profile-gallery-nav" type="button" data-gallery-direction="-1" aria-label="Previous profile photo"><svg class="icon"><use href="#icon-chevron-left" /></svg></button>
+                <div class="profile-thumbs" tabindex="0">
+                  <button class="is-active" type="button"><img src="images/微信图片_20260605212128_433_1496.jpg" alt="" /></button>
+                  <button type="button"><img src="images/微信图片_20260605210259_381_1496.jpg" alt="" /></button>
+                  <button type="button"><img src="images/微信图片_20260605210301_384_1496.jpg" alt="" /></button>
+                  <button type="button"><img src="images/微信图片_20260605205138_354_1496.jpg" alt="" /></button>
+                  <button class="is-locked" type="button" aria-label="Locked photo"><img src="images/微信图片_20260605204955_333_1496.jpg" alt="" /><span><svg class="icon"><use href="#icon-crown" /></svg></span></button>
+                </div>
+                <button class="profile-gallery-nav" type="button" data-gallery-direction="1" aria-label="Next profile photo"><svg class="icon"><use href="#icon-chevron-right" /></svg></button>
+              </div>
               <section class="profile-identity">
                 <h1>Chris</h1>
                 <p>Last chatted 08-06-2026</p>
@@ -150,7 +157,7 @@
               <section class="profile-attributes" aria-label="Companion attributes"></section>
               <button class="creator-cta" type="button"><svg class="icon"><use href="#icon-sparkle" /></svg>Create by Myself</button>
               <section class="diary-timeline" aria-labelledby="diary-title">
-                <h2 id="diary-title"><svg class="icon"><use href="#icon-heart" /></svg>Diary Line</h2>
+                <h2 id="diary-title"><img class="diary-title-icon" src="images/Diary.svg" alt="" />Diary Line</h2>
                 <div class="timeline-list"></div>
               </section>
               <div class="profile-action-bar">
@@ -171,6 +178,6 @@
       </nav>
     </div>
 
-    <script src="script.js?v=chat-voice-transfer-20260705"></script>
+    <script src="script.js?v=sidebar-offer-composer-20260706"></script>
   </body>
 </html>
