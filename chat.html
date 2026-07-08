@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rizzora Chat</title>
-    <link rel="stylesheet" href="styles.css?v=sidebar-offer-composer-20260706" />
+    <link rel="stylesheet" href="styles.css?v=premium-modal-20260708" />
   </head>
   <body class="chat-page">
     <svg aria-hidden="true" class="svg-sprite">
@@ -16,8 +16,11 @@
       <symbol id="icon-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4V10Zm8 0v10M3.5 7h17v3h-17V7Zm8.5 0C11.6 5.2 10.5 4 9.1 4 8 4 7.2 4.8 7.2 5.8 7.2 7 8.6 7 12 7Zm0 0c.4-1.8 1.5-3 2.9-3 1.1 0 1.9.8 1.9 1.8C16.8 7 15.4 7 12 7Z" /></symbol>
       <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5v5l3.3 2" /></symbol>
       <symbol id="icon-more" viewBox="0 0 24 24"><path d="M12 6.5h.01M12 12h.01M12 17.5h.01" /></symbol>
+      <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" /></symbol>
       <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" /></symbol>
       <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></symbol>
+      <symbol id="icon-chevron-up" viewBox="0 0 24 24"><path d="m6 15 6-6 6 6" /></symbol>
+      <symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
       <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.2" /><path d="m15.4 15.4 4.1 4.1" /></symbol>
       <symbol id="icon-play" viewBox="0 0 24 24"><path d="m9 7 8 5-8 5V7Z" /></symbol>
       <symbol id="icon-send" viewBox="0 0 24 24"><path d="m4 12 15.5-7-4.8 15-3.1-6.2L4 12Zm7.6 1.8 7.9-8.8" /></symbol>
@@ -43,14 +46,14 @@
           <nav class="nav-list" aria-label="Main">
             <a class="nav-item" href="index.html"><svg class="icon"><use href="#icon-home" /></svg>Home</a>
             <a class="nav-item" href="#"><svg class="icon"><use href="#icon-heart" /></svg>For You</a>
-            <a class="nav-item" href="#"><img class="nav-icon-img" src="images/icon/creation_icon.svg" alt="" />My Wish</a>
+            <a class="nav-item" href="#"><img class="nav-icon-img" src="images/ICON/creation_icon.svg" alt="" />My Wish</a>
             <a class="nav-item is-active" href="chat.html"><svg class="icon"><use href="#icon-chat" /></svg>Message <span class="pill">23</span></a>
           </nav>
           <div class="chat-preview-list" aria-label="Recent chats"></div>
         </div>
         <div class="sidebar-footer">
           <button class="premium-cta" type="button">
-            <span class="premium-icon" aria-hidden="true"></span>
+            <img class="premium-icon" src="images/ICON/Crown.svg" alt="" />
             <span>
               <strong>Premium</strong>
               <small>Endless Surprises</small>
@@ -58,9 +61,9 @@
             <span class="discount">-50%</span>
           </button>
           <div class="socials" aria-label="Social links">
-            <img src="images/icon/Social_Icons_ins.svg" alt="Instagram" />
-            <img src="images/icon/Social_Icons_X.svg" alt="X" />
-            <img src="images/icon/Social_Icons_TK.svg" alt="TikTok" />
+            <img src="images/ICON/Social_Icons_ins.svg" alt="Instagram" />
+            <img src="images/ICON/Social_Icons_X.svg" alt="X" />
+            <img src="images/ICON/Social_Icons_TK.svg" alt="TikTok" />
           </div>
         </div>
       </aside>
@@ -71,7 +74,7 @@
             <span class="offer-label"><svg class="icon"><use href="#icon-gift" /></svg>Special Offer</span>
             <span class="timer"><svg class="icon"><use href="#icon-clock" /></svg>23:21:43</span>
             <span class="offer-copy">Get up to 70% OFF on Premium Subscription</span>
-            <button class="claim-button" type="button"><span class="claim-icon" aria-hidden="true"></span>Claim Offer</button>
+            <button class="claim-button" type="button"><img class="claim-icon" src="images/ICON/Crown.svg" alt="" />Claim Offer</button>
           </div>
           <div class="account">
             <img src="images/微信图片_20260605210259_381_1496.jpg" alt="" />
@@ -92,7 +95,7 @@
             </label>
             <div class="conversation-list" aria-label="Conversation list"></div>
             <button class="chat-premium-card" type="button">
-              <span class="premium-mark"><svg class="icon"><use href="#icon-crown" /></svg></span>
+              <span class="premium-mark" aria-hidden="true"><img class="premium-mark-icon" src="images/ICON/Crown.svg" alt="" /></span>
               <span>
                 <strong>Premium Access</strong>
                 <small>Unlock all companions</small>
@@ -136,6 +139,7 @@
             <div class="profile-scroll">
               <div class="profile-media">
                 <img class="profile-hero" src="images/微信图片_20260605212128_433_1496.jpg" alt="Jasper portrait" />
+                <button class="profile-play-button" type="button"><img src="images/ICON/play.svg" alt="" />Play</button>
                 <button class="profile-zoom" type="button" aria-label="View full portrait"><svg class="icon"><use href="#icon-plus" /></svg></button>
               </div>
               <div class="profile-gallery" aria-label="Profile gallery">
@@ -150,11 +154,19 @@
                 <button class="profile-gallery-nav" type="button" data-gallery-direction="1" aria-label="Next profile photo"><svg class="icon"><use href="#icon-chevron-right" /></svg></button>
               </div>
               <section class="profile-identity">
-                <h1>Chris</h1>
+                <div class="profile-identity-row">
+                  <h1>Chris</h1>
+                  <button class="profile-collapse-toggle" type="button" aria-expanded="true" aria-controls="profile-collapsible" aria-label="Collapse profile details">
+                    <svg class="icon profile-collapse-icon-expanded"><use href="#icon-chevron-up" /></svg>
+                    <svg class="icon profile-collapse-icon-collapsed"><use href="#icon-chevron-down" /></svg>
+                  </button>
+                </div>
                 <p>Last chatted 08-06-2026</p>
               </section>
-              <p class="profile-bio">A thoughtful and charming young man who enjoys meaningful conversations and emotional connections.</p>
-              <section class="profile-attributes" aria-label="Companion attributes"></section>
+              <div class="profile-collapsible" id="profile-collapsible">
+                <p class="profile-bio">A thoughtful and charming young man who enjoys meaningful conversations and emotional connections.</p>
+                <section class="profile-attributes" aria-label="Companion attributes"></section>
+              </div>
               <button class="creator-cta" type="button"><svg class="icon"><use href="#icon-sparkle" /></svg>Create by Myself</button>
               <section class="diary-timeline" aria-labelledby="diary-title">
                 <h2 id="diary-title"><img class="diary-title-icon" src="images/Diary.svg" alt="" />Diary Line</h2>
@@ -178,6 +190,16 @@
       </nav>
     </div>
 
-    <script src="script.js?v=sidebar-offer-composer-20260706"></script>
+    <div class="media-lightbox" aria-modal="true" role="dialog" aria-label="Image preview" hidden>
+      <button class="media-lightbox-close" type="button" aria-label="Close image preview"><svg class="icon"><use href="#icon-x" /></svg></button>
+      <button class="media-lightbox-nav is-prev" type="button" data-lightbox-direction="-1" aria-label="Previous image"><svg class="icon"><use href="#icon-chevron-left" /></svg></button>
+      <figure class="media-lightbox-frame">
+        <img class="media-lightbox-image" src="" alt="" />
+        <figcaption class="media-lightbox-caption"></figcaption>
+      </figure>
+      <button class="media-lightbox-nav is-next" type="button" data-lightbox-direction="1" aria-label="Next image"><svg class="icon"><use href="#icon-chevron-right" /></svg></button>
+    </div>
+
+    <script src="script.js?v=premium-modal-20260708"></script>
   </body>
 </html>

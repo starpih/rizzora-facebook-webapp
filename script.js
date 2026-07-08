@@ -111,6 +111,79 @@ const diaryItems = [
   { title: "First conversation", date: "May 12" },
 ];
 
+const premiumPlans = [
+  {
+    id: "free",
+    tier: "Free User",
+    label: "Free",
+    price: "Free",
+    tone: "free",
+    cta: "Current Plan",
+    ctaState: "disabled",
+    features: [
+      { text: "Basic Chat Model", included: true },
+      { text: "20 voice plays / day", included: true },
+      { text: "30 message replies / day", included: true },
+      { text: "1 custom AI character", included: true },
+      { text: "1 custom voice", included: true },
+      { text: "Browse 3 lifestyle photos", included: true },
+      { text: "Browse 1 dynamic video", included: true },
+      { text: "Good memory", included: false },
+      { text: "Change character personality", included: false },
+      { text: "Change character voice", included: false },
+      { text: "Early access to new features", included: false },
+    ],
+  },
+  {
+    id: "vip",
+    tier: "VIP Member",
+    label: "Popular",
+    badge: "Most Popular",
+    price: "¥38",
+    originalPrice: "¥58",
+    suffix: "/mo",
+    tone: "vip",
+    cta: "Subscribe Now",
+    features: [
+      { text: "Basic / Advanced Chat Model", included: true },
+      { text: "200 voice plays / day", included: true },
+      { text: "500 message replies / day", included: true },
+      { text: "20 custom AI characters", included: true },
+      { text: "20 custom voices", included: true },
+      { text: "200 lifestyle photo views / month", included: true },
+      { text: "50 lifestyle photo views / month", included: true },
+      { text: "Good memory", included: true },
+      { text: "Change character personality", included: true },
+      { text: "Change character voice", included: true },
+      { text: "Early access to new features", included: true },
+    ],
+  },
+  {
+    id: "svip",
+    tier: "SVIP Member",
+    label: "Ultimate",
+    badge: "Premium",
+    price: "¥98",
+    originalPrice: "¥128",
+    suffix: "/mo",
+    tone: "svip",
+    cta: "Get Premium",
+    features: [
+      { text: "Basic / Advanced Chat Model", included: true },
+      { text: "Unlimited voice plays", included: true },
+      { text: "Unlimited message replies", included: true },
+      { text: "Unlimited custom AI characters", included: true },
+      { text: "Unlimited custom voices", included: true },
+      { text: "Unlimited lifestyle photo views", included: true },
+      { text: "Unlimited dynamic video views", included: true },
+      { text: "Excellent memory", included: true },
+      { text: "Change character personality", included: true },
+      { text: "Change character voice", included: true },
+      { text: "Early access to new features", included: true },
+    ],
+  },
+];
+
 function icon(name) {
   return `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`;
 }
@@ -184,7 +257,7 @@ function characterCard({ image, video }) {
 
 function chatPreview(image, index) {
   return `
-    <a class="chat-preview" href="#">
+    <a class="chat-preview" href="chat.html">
       <img src="${imageBase}${image}" alt="" />
       <span>
         <strong>Alice Wang <span class="pill">3</span></strong>
@@ -216,6 +289,122 @@ function storyCard() {
   `;
 }
 
+function premiumFeatureItem(feature) {
+  return `
+    <li class="${feature.included ? "is-included" : "is-locked"}">
+      <span class="premium-feature-icon" aria-hidden="true">${feature.included ? "✓" : "×"}</span>
+      <span>${feature.text}</span>
+    </li>
+  `;
+}
+
+function premiumPlanCard(plan) {
+  const price = plan.price === "Free"
+    ? `<strong class="premium-price-main">Free</strong>`
+    : `
+      <span class="premium-price-old">${plan.originalPrice}</span>
+      <strong class="premium-price-main">${plan.price}</strong>
+      <span class="premium-price-suffix">${plan.suffix}</span>
+    `;
+
+  return `
+    <article class="premium-plan-card is-${plan.tone}" data-plan="${plan.id}">
+      <header class="premium-plan-header">
+        <span class="premium-plan-icon" aria-hidden="true">
+          ${plan.id === "free" ? `<span class="premium-free-mark">✦</span>` : `<img src="images/ICON/Crown.svg" alt="" />`}
+        </span>
+        ${plan.badge ? `<span class="premium-plan-badge">${plan.badge}</span>` : ""}
+      </header>
+      <div class="premium-plan-copy">
+        <h3>${plan.tier}</h3>
+        <p>${plan.label}</p>
+      </div>
+      <div class="premium-price">${price}</div>
+      <ul class="premium-feature-list">${plan.features.map(premiumFeatureItem).join("")}</ul>
+      <button class="premium-plan-button" type="button" data-plan-cta="${plan.id}" ${plan.ctaState === "disabled" ? "disabled" : ""}>${plan.cta}</button>
+    </article>
+  `;
+}
+
+function createPremiumModal() {
+  if (document.querySelector(".premium-modal-overlay")) return;
+  const modal = document.createElement("div");
+  modal.className = "premium-modal-overlay";
+  modal.hidden = true;
+  modal.innerHTML = `
+    <div class="premium-modal-scrim" data-premium-close></div>
+    <section class="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premium-modal-title" aria-describedby="premium-modal-description">
+      <button class="premium-modal-close" type="button" data-premium-close aria-label="Close premium plans">×</button>
+      <header class="premium-modal-header">
+        <div class="premium-eyebrow"><img src="images/ICON/Crown.svg" alt="" />Upgrade to Unlock All Benefits</div>
+        <h2 id="premium-modal-title">Choose Your Plan</h2>
+        <p id="premium-modal-description">Build a deeper connection with your AI companion and unlock unlimited possibilities</p>
+        <div class="billing-toggle" role="group" aria-label="Billing cycle">
+          <button type="button" data-billing="monthly">Monthly</button>
+          <button class="is-selected" type="button" data-billing="yearly">Yearly</button>
+        </div>
+      </header>
+      <div class="premium-plan-grid">${premiumPlans.map(premiumPlanCard).join("")}</div>
+      <p class="premium-legal">Cancel anytime · Secure payment · Supports Alipay / WeChat Pay</p>
+    </section>
+  `;
+  document.body.appendChild(modal);
+}
+
+function openPremiumModal() {
+  createPremiumModal();
+  const modal = document.querySelector(".premium-modal-overlay");
+  if (!modal) return;
+  modal.hidden = false;
+  document.body.classList.add("is-modal-open");
+  window.setTimeout(() => modal.classList.add("is-open"), 0);
+  modal.querySelector(".premium-modal-close")?.focus();
+}
+
+function closePremiumModal() {
+  const modal = document.querySelector(".premium-modal-overlay");
+  if (!modal || modal.hidden) return;
+  modal.classList.remove("is-open");
+  document.body.classList.remove("is-modal-open");
+  window.setTimeout(() => {
+    modal.hidden = true;
+  }, 180);
+}
+
+function initPremiumModal() {
+  createPremiumModal();
+  document.querySelectorAll(".claim-button, .premium-cta, .chat-premium-card, .profile-thumbs .is-locked").forEach((trigger) => {
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      openPremiumModal();
+    });
+  });
+
+  document.querySelectorAll("[data-premium-close]").forEach((button) => {
+    button.addEventListener("click", closePremiumModal);
+  });
+
+  document.querySelectorAll("[data-billing]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-billing]").forEach((item) => item.classList.remove("is-selected"));
+      button.classList.add("is-selected");
+    });
+  });
+
+  document.querySelectorAll("[data-plan-cta]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.disabled || button.classList.contains("is-loading")) return;
+      button.classList.add("is-loading");
+      button.setAttribute("aria-busy", "true");
+      window.setTimeout(() => {
+        button.classList.remove("is-loading");
+        button.removeAttribute("aria-busy");
+      }, 850);
+    });
+  });
+}
+
 function conversationItem(item) {
   return `
     <button class="conversation-item ${item.active ? "is-active" : ""}" type="button">
@@ -234,8 +423,11 @@ function messageRow(item) {
   if (item.day) return `<div class="message-day"><span>${item.day}</span></div>`;
   const isUser = item.sender === "user";
   const avatar = isUser ? portraits[6] : portraits[8];
+  const mediaIndex = item.type === "media"
+    ? chatMessages.filter((message) => message.type === "media").findIndex((message) => message === item)
+    : -1;
   const media = item.type === "media"
-    ? `<img class="message-media" src="${imageBase}${item.image}" alt="" />${item.text ? `<p>${item.text}</p>` : ""}`
+    ? `<img class="message-media" src="${imageBase}${item.image}" alt="" data-lightbox-index="${mediaIndex}" />${item.text ? `<p>${item.text}</p>` : ""}`
     : "";
   const voice = item.type === "voice"
     ? `
@@ -316,11 +508,86 @@ if (conversationList) conversationList.innerHTML = chatConversations.map(convers
 const messageScroll = document.querySelector(".message-scroll");
 if (messageScroll) messageScroll.innerHTML = chatMessages.map(messageRow).join("");
 
+const chatMediaItems = chatMessages
+  .filter((item) => item.type === "media")
+  .map((item) => ({
+    src: `${imageBase}${item.image}`,
+    caption: item.text || "",
+  }));
+
+const mediaLightbox = document.querySelector(".media-lightbox");
+const mediaLightboxImage = document.querySelector(".media-lightbox-image");
+const mediaLightboxCaption = document.querySelector(".media-lightbox-caption");
+let activeMediaIndex = 0;
+
+function renderMediaLightbox() {
+  const item = chatMediaItems[activeMediaIndex];
+  if (!item || !mediaLightboxImage || !mediaLightboxCaption) return;
+  mediaLightboxImage.src = item.src;
+  mediaLightboxCaption.textContent = item.caption;
+}
+
+function openMediaLightbox(index) {
+  if (!mediaLightbox || !chatMediaItems.length) return;
+  activeMediaIndex = index;
+  renderMediaLightbox();
+  mediaLightbox.hidden = false;
+  document.body.classList.add("is-lightbox-open");
+}
+
+function closeMediaLightbox() {
+  if (!mediaLightbox) return;
+  mediaLightbox.hidden = true;
+  document.body.classList.remove("is-lightbox-open");
+}
+
+function stepMediaLightbox(direction) {
+  activeMediaIndex = (activeMediaIndex + direction + chatMediaItems.length) % chatMediaItems.length;
+  renderMediaLightbox();
+}
+
+document.querySelectorAll(".message-media").forEach((image) => {
+  image.addEventListener("click", () => {
+    openMediaLightbox(Number(image.dataset.lightboxIndex || 0));
+  });
+});
+
+document.querySelector(".media-lightbox-close")?.addEventListener("click", closeMediaLightbox);
+
+document.querySelectorAll(".media-lightbox-nav").forEach((button) => {
+  button.addEventListener("click", () => {
+    stepMediaLightbox(Number(button.dataset.lightboxDirection || 1));
+  });
+});
+
+mediaLightbox?.addEventListener("click", (event) => {
+  if (event.target === mediaLightbox) closeMediaLightbox();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closePremiumModal();
+  if (!mediaLightbox || mediaLightbox.hidden) return;
+  if (event.key === "Escape") closeMediaLightbox();
+  if (event.key === "ArrowLeft") stepMediaLightbox(-1);
+  if (event.key === "ArrowRight") stepMediaLightbox(1);
+});
+
 const profileAttributesNode = document.querySelector(".profile-attributes");
 if (profileAttributesNode) profileAttributesNode.innerHTML = profileAttributes.map(profileAttribute).join("");
 
+const profilePanel = document.querySelector(".profile-panel");
+const profileCollapseToggle = document.querySelector(".profile-collapse-toggle");
+
+profileCollapseToggle?.addEventListener("click", () => {
+  const isCollapsed = profilePanel?.classList.toggle("is-profile-collapsed") || false;
+  profileCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  profileCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expand profile details" : "Collapse profile details");
+});
+
 const timelineList = document.querySelector(".timeline-list");
 if (timelineList) timelineList.innerHTML = diaryItems.map(diaryItem).join("");
+
+initPremiumModal();
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -520,7 +787,7 @@ chatVoiceAudio.addEventListener("ended", () => {
   activeChatVoice = null;
 });
 
-document.querySelectorAll(".claim-button, .primary-button, .premium-cta, .chat-action").forEach((button) => {
+document.querySelectorAll(".primary-button, .chat-action").forEach((button) => {
   button.addEventListener("click", () => {
     if (button.classList.contains("is-loading")) return;
     button.classList.add("is-loading");
