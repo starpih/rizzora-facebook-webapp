@@ -588,12 +588,9 @@ a {
   position: relative;
   width: min(920px, calc(100vw - 48px));
   max-height: calc(100vh - 48px);
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  overflow: auto;
+  overflow: hidden;
   border: 1px solid #403d66;
   border-radius: 16px;
-  padding: 40px 24px 28px;
   background: linear-gradient(161deg, #1d1e39 8%, #15142b 58%, #1a1831 92%);
   box-shadow:
     0 32px 80px rgba(0, 0, 0, 0.6),
@@ -603,7 +600,14 @@ a {
   scrollbar-width: none;
 }
 
-.premium-modal::-webkit-scrollbar {
+.premium-modal-content {
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: 40px 24px 28px;
+  scrollbar-width: none;
+}
+
+.premium-modal-content::-webkit-scrollbar {
   display: none;
 }
 
@@ -623,6 +627,7 @@ a {
   position: absolute;
   top: 20px;
   right: 20px;
+  z-index: 2;
   width: 32px;
   height: 32px;
   display: grid;
@@ -2693,10 +2698,148 @@ em {
 }
 
 .diary-timeline {
+  position: relative;
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-sm);
-  padding: 14px;
+  padding: 14px 74px 14px 14px;
   background: rgba(255, 255, 255, 0.025);
+}
+
+.intimacy-bottle {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  width: 48px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 8px 18px rgba(236, 76, 175, 0.22));
+  transform-origin: 50% 85%;
+  animation: intimacy-bottle-float 4.8s ease-in-out infinite;
+}
+
+.intimacy-bottle::before,
+.intimacy-bottle::after {
+  content: "";
+  position: absolute;
+  inset: 7px 2px 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.intimacy-bottle::before {
+  background: radial-gradient(circle at 68% 72%, rgba(255, 255, 255, 0.78) 0 2px, transparent 3px),
+    radial-gradient(circle at 38% 68%, rgba(255, 199, 235, 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 54% 56%, rgba(255, 255, 255, 0.62) 0 1px, transparent 2px);
+}
+
+.intimacy-bottle::after {
+  box-shadow: 0 0 20px rgba(236, 76, 175, 0.34);
+}
+
+.intimacy-bottle:hover {
+  filter: drop-shadow(0 10px 24px rgba(236, 76, 175, 0.38));
+}
+
+.intimacy-bottle img {
+  width: 48px;
+  height: 58px;
+  display: block;
+  object-fit: contain;
+  transition:
+    opacity 180ms ease,
+    transform 220ms ease,
+    filter 220ms ease;
+}
+
+.intimacy-bottle.is-changing {
+  animation:
+    intimacy-bottle-pop 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    intimacy-bottle-float 4.8s ease-in-out infinite 520ms;
+}
+
+.intimacy-bottle.is-changing img {
+  filter: brightness(1.14) saturate(1.12);
+}
+
+.intimacy-bottle.is-sparkling::before {
+  animation: intimacy-sparkle 760ms ease-out;
+}
+
+.intimacy-bottle.is-sparkling::after {
+  animation: intimacy-glow 760ms ease-out;
+}
+
+@keyframes intimacy-bottle-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-2px) rotate(-1deg);
+  }
+}
+
+@keyframes intimacy-bottle-pop {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+
+  32% {
+    transform: translateY(-4px) scale(1.08) rotate(-4deg);
+  }
+
+  62% {
+    transform: translateY(1px) scale(0.98) rotate(3deg);
+  }
+
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes intimacy-sparkle {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scale(0.86);
+  }
+
+  38% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-7px) scale(1.18);
+  }
+}
+
+@keyframes intimacy-glow {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intimacy-bottle,
+  .intimacy-bottle.is-changing {
+    animation: none;
+  }
+
+  .intimacy-bottle img {
+    transition: none;
+  }
 }
 
 .diary-timeline h2 {
@@ -2818,6 +2961,10 @@ em {
 
   .premium-modal {
     width: calc(100vw - 32px);
+    max-height: calc(100vh - 32px);
+  }
+
+  .premium-modal-content {
     max-height: calc(100vh - 32px);
     padding: 36px 16px 24px;
   }

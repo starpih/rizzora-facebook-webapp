@@ -111,6 +111,8 @@ const diaryItems = [
   { title: "First conversation", date: "May 12" },
 ];
 
+const intimacyBottleLevels = [0, 20, 40, 60, 80, 100];
+
 const premiumPlans = [
   {
     id: "free",
@@ -335,17 +337,19 @@ function createPremiumModal() {
     <div class="premium-modal-scrim" data-premium-close></div>
     <section class="premium-modal" role="dialog" aria-modal="true" aria-labelledby="premium-modal-title" aria-describedby="premium-modal-description">
       <button class="premium-modal-close" type="button" data-premium-close aria-label="Close premium plans">×</button>
-      <header class="premium-modal-header">
-        <div class="premium-eyebrow"><img src="images/ICON/Crown.svg" alt="" />Upgrade to Unlock All Benefits</div>
-        <h2 id="premium-modal-title">Choose Your Plan</h2>
-        <p id="premium-modal-description">Build a deeper connection with your AI companion and unlock unlimited possibilities</p>
-        <div class="billing-toggle" role="group" aria-label="Billing cycle">
-          <button type="button" data-billing="monthly">Monthly</button>
-          <button class="is-selected" type="button" data-billing="yearly">Yearly</button>
-        </div>
-      </header>
-      <div class="premium-plan-grid">${premiumPlans.map(premiumPlanCard).join("")}</div>
-      <p class="premium-legal">Cancel anytime · Secure payment · Supports Alipay / WeChat Pay</p>
+      <div class="premium-modal-content">
+        <header class="premium-modal-header">
+          <div class="premium-eyebrow"><img src="images/ICON/Crown.svg" alt="" />Upgrade to Unlock All Benefits</div>
+          <h2 id="premium-modal-title">Choose Your Plan</h2>
+          <p id="premium-modal-description">Build a deeper connection with your AI companion and unlock unlimited possibilities</p>
+          <div class="billing-toggle" role="group" aria-label="Billing cycle">
+            <button type="button" data-billing="monthly">Monthly</button>
+            <button class="is-selected" type="button" data-billing="yearly">Yearly</button>
+          </div>
+        </header>
+        <div class="premium-plan-grid">${premiumPlans.map(premiumPlanCard).join("")}</div>
+        <p class="premium-legal">Cancel anytime · Secure payment · Supports Alipay / WeChat Pay</p>
+      </div>
     </section>
   `;
   document.body.appendChild(modal);
@@ -483,6 +487,58 @@ function diaryItem(item) {
   `;
 }
 
+function getIntimacyBottleLevel(value) {
+  const percent = Number.isFinite(Number(value)) ? Math.max(0, Math.min(100, Number(value))) : 0;
+  return intimacyBottleLevels.reduce((closest, level) => (
+    Math.abs(level - percent) < Math.abs(closest - percent) ? level : closest
+  ), intimacyBottleLevels[0]);
+}
+
+function setIntimacyBottle(value, options = {}) {
+  const timeline = document.querySelector(".diary-timeline");
+  const bottle = document.querySelector(".intimacy-bottle");
+  const image = bottle?.querySelector("img");
+  if (!timeline || !bottle || !image) return;
+
+  const level = getIntimacyBottleLevel(value);
+  const nextSrc = `images/heart-bottle-lv1-${level}.png`;
+  const currentLevel = Number(timeline.dataset.intimacy || 0);
+
+  timeline.dataset.intimacy = String(level);
+  bottle.setAttribute("aria-label", `Intimacy level ${level} percent`);
+
+  if (image.getAttribute("src") === nextSrc && !options.force) return;
+
+  bottle.classList.remove("is-changing", "is-sparkling");
+  void bottle.offsetWidth;
+  bottle.classList.add("is-changing");
+
+  window.setTimeout(() => {
+    image.src = nextSrc;
+    if (level > currentLevel || options.force) bottle.classList.add("is-sparkling");
+  }, 90);
+
+  window.setTimeout(() => {
+    bottle.classList.remove("is-changing", "is-sparkling");
+  }, 900);
+}
+
+function initIntimacyBottle() {
+  const timeline = document.querySelector(".diary-timeline");
+  const bottle = document.querySelector(".intimacy-bottle");
+  if (!timeline || !bottle) return;
+
+  setIntimacyBottle(timeline.dataset.intimacy || 0, { force: true });
+  bottle.addEventListener("click", () => {
+    const currentLevel = getIntimacyBottleLevel(timeline.dataset.intimacy || 0);
+    const currentIndex = intimacyBottleLevels.indexOf(currentLevel);
+    const nextLevel = intimacyBottleLevels[(currentIndex + 1) % intimacyBottleLevels.length];
+    setIntimacyBottle(nextLevel, { force: nextLevel === 0 });
+  });
+
+  window.setIntimacyBottle = setIntimacyBottle;
+}
+
 const featuredGrid = document.querySelector(".featured-grid");
 if (featuredGrid) featuredGrid.innerHTML = featured.map(featuredCard).join("");
 
@@ -587,6 +643,7 @@ profileCollapseToggle?.addEventListener("click", () => {
 const timelineList = document.querySelector(".timeline-list");
 if (timelineList) timelineList.innerHTML = diaryItems.map(diaryItem).join("");
 
+initIntimacyBottle();
 initPremiumModal();
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
