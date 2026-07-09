@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Rizzora Chat</title>
-    <link rel="stylesheet" href="styles.css?v=premium-modal-20260708" />
+    <link rel="stylesheet" href="styles.css?v=chat-polish-20260709f" />
   </head>
   <body class="chat-page">
     <svg aria-hidden="true" class="svg-sprite">
@@ -30,6 +30,9 @@
       <symbol id="icon-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" /><path d="M8.8 10h.01M15.2 10h.01M8.8 14.2c1.7 1.6 4.7 1.6 6.4 0" /></symbol>
       <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
       <symbol id="icon-pin" viewBox="0 0 24 24"><path d="m14.5 4 5.5 5.5-2.8 1-3.6 3.6.2 3.8-1.3 1.3-3.1-4.5-4.6-3.2 1.3-1.3 3.8.2 3.6-3.6 1-2.8Z" /></symbol>
+      <symbol id="icon-thumb-up" viewBox="0 0 24 24"><path d="M7.5 20H4.8a1.6 1.6 0 0 1-1.6-1.6v-6.2a1.6 1.6 0 0 1 1.6-1.6h2.7M7.5 20h8.9c1.1 0 2-.7 2.3-1.8l1.5-5.3a2 2 0 0 0-1.9-2.6h-4.1l.6-3.1A2.5 2.5 0 0 0 12.4 4h-.5L7.5 10.6V20Z" /></symbol>
+      <symbol id="icon-thumb-down" viewBox="0 0 24 24"><path d="M16.5 4h2.7a1.6 1.6 0 0 1 1.6 1.6v6.2a1.6 1.6 0 0 1-1.6 1.6h-2.7M16.5 4H7.6c-1.1 0-2 .7-2.3 1.8L3.8 11.1A2 2 0 0 0 5.7 13.7h4.1l-.6 3.1A2.5 2.5 0 0 0 11.6 20h.5l4.4-6.6V4Z" /></symbol>
+      <symbol id="icon-profile-card" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="3" /><circle cx="10" cy="11" r="2.2" /><path d="M7.2 16c.8-1.7 4.8-1.7 5.6 0M14.8 10h2.4M14.8 13.5h2.4" /></symbol>
       <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" /></symbol>
       <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14" rx="2.5" /><path d="M8 4v4M16 4v4M4 10h16" /></symbol>
       <symbol id="icon-ruler" viewBox="0 0 24 24"><path d="M5 19 19 5M8 16l-2-2M11 13l-2-2M14 10l-2-2M17 7l-2-2" /></symbol>
@@ -88,7 +91,13 @@
 
         <section class="chat-workspace" aria-label="Chat with Jasper">
           <section class="conversation-panel" aria-label="Conversations">
-            <h1 class="conversation-title">Messages</h1>
+            <h1 class="conversation-title">
+              <span>Messages</span>
+              <button class="conversation-collapse-toggle" type="button" aria-label="Collapse message list" aria-expanded="true">
+                <svg class="icon collapse-icon-expanded"><use href="#icon-chevron-left" /></svg>
+                <svg class="icon collapse-icon-collapsed"><use href="#icon-chevron-right" /></svg>
+              </button>
+            </h1>
             <label class="chat-search">
               <svg class="icon" aria-hidden="true"><use href="#icon-search" /></svg>
               <input type="search" placeholder="Search companions..." />
@@ -103,7 +112,10 @@
             </button>
           </section>
 
-          <section class="message-panel" aria-label="Current conversation">
+          <section class="message-panel" aria-label="Current conversation" data-intimacy="60">
+            <button class="intimacy-bottle" type="button" aria-label="Intimacy level 60 percent">
+              <img src="images/heart-bottle-lv1-60.png" alt="" />
+            </button>
             <header class="chat-header">
               <div class="chat-header-person">
                 <img src="images/微信图片_20260605212128_433_1496.jpg" alt="" />
@@ -157,8 +169,7 @@
                 <div class="profile-identity-row">
                   <h1>Chris</h1>
                   <button class="profile-collapse-toggle" type="button" aria-expanded="true" aria-controls="profile-collapsible" aria-label="Collapse profile details">
-                    <svg class="icon profile-collapse-icon-expanded"><use href="#icon-chevron-up" /></svg>
-                    <svg class="icon profile-collapse-icon-collapsed"><use href="#icon-chevron-down" /></svg>
+                    <svg class="icon"><use href="#icon-profile-card" /></svg>
                   </button>
                 </div>
                 <p>Last chatted 08-06-2026</p>
@@ -167,11 +178,8 @@
                 <p class="profile-bio">A thoughtful and charming young man who enjoys meaningful conversations and emotional connections.</p>
                 <section class="profile-attributes" aria-label="Companion attributes"></section>
               </div>
-              <button class="creator-cta" type="button"><svg class="icon"><use href="#icon-sparkle" /></svg>Create by Myself</button>
-              <section class="diary-timeline" aria-labelledby="diary-title" data-intimacy="60">
-                <button class="intimacy-bottle" type="button" aria-label="Intimacy level 60 percent">
-                  <img src="images/heart-bottle-lv1-60.png" alt="" />
-                </button>
+              <button class="creator-cta" type="button"><svg class="icon"><use href="#icon-sparkle" /></svg><span>Create by Myself</span></button>
+              <section class="diary-timeline" aria-labelledby="diary-title">
                 <h2 id="diary-title"><img class="diary-title-icon" src="images/Diary.svg" alt="" />Diary Line</h2>
                 <div class="timeline-list"></div>
               </section>
@@ -203,6 +211,6 @@
       <button class="media-lightbox-nav is-next" type="button" data-lightbox-direction="1" aria-label="Next image"><svg class="icon"><use href="#icon-chevron-right" /></svg></button>
     </div>
 
-    <script src="script.js?v=premium-modal-20260708"></script>
+    <script src="script.js?v=chat-polish-20260709f"></script>
   </body>
 </html>

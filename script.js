@@ -423,10 +423,40 @@ function conversationItem(item) {
   `;
 }
 
-function messageRow(item) {
+function messageActionBar() {
+  return `
+    <div class="message-feedback" aria-label="Message feedback">
+      <button class="message-feedback-button" type="button" data-feedback="pin" aria-label="Pin message"><img src="images/ICON/pin-fill.svg" alt="" /></button>
+      <button class="message-feedback-button" type="button" data-feedback="like" aria-label="Like message">${icon("thumb-up")}</button>
+      <button class="message-feedback-button" type="button" data-feedback="dislike" aria-label="Dislike message">${icon("thumb-down")}</button>
+    </div>
+  `;
+}
+
+function messageVoiceBlock(item, index) {
+  const duration = item.duration || "0:12";
+  const audio = item.audio || voicePreviews[index % voicePreviews.length];
+  const transcript = item.transcript || item.text || "Voice message";
+  return `
+    <div class="message-voice-block">
+      <div class="message-voice" data-audio="${audioBase}${audio}" style="--audio-progress: 0%">
+        <button class="chat-voice-play" type="button" aria-label="Play voice message">${icon("play")}</button>
+        <div class="wave" aria-hidden="true">${audioBars()}</div>
+        <span class="chat-voice-duration">0:00 / ${duration}</span>
+        <button class="chat-voice-transfer" type="button" aria-label="Convert voice to text">
+          <img src="${imageBase}transfer.svg" alt="" />
+        </button>
+      </div>
+      <p class="chat-voice-transcript" hidden>${transcript}</p>
+    </div>
+  `;
+}
+
+function messageRow(item, index = 0) {
   if (item.day) return `<div class="message-day"><span>${item.day}</span></div>`;
   const isUser = item.sender === "user";
   const avatar = isUser ? portraits[6] : portraits[8];
+  const isUnread = !isUser && item.type !== "media" && item.read !== true;
   const mediaIndex = item.type === "media"
     ? chatMessages.filter((message) => message.type === "media").findIndex((message) => message === item)
     : -1;
@@ -434,26 +464,19 @@ function messageRow(item) {
     ? `<img class="message-media" src="${imageBase}${item.image}" alt="" data-lightbox-index="${mediaIndex}" />${item.text ? `<p>${item.text}</p>` : ""}`
     : "";
   const voice = item.type === "voice"
-    ? `
-      <div class="message-voice-block">
-        <div class="message-voice" data-audio="${audioBase}${item.audio}" style="--audio-progress: 0%">
-          <button class="chat-voice-play" type="button" aria-label="Play voice message">${icon("play")}</button>
-          <div class="wave" aria-hidden="true">${audioBars()}</div>
-          <span class="chat-voice-duration">0:00 / ${item.duration}</span>
-          <button class="chat-voice-transfer" type="button" aria-label="Convert voice to text">
-            <img src="${imageBase}transfer.svg" alt="" />
-          </button>
-        </div>
-        <p class="chat-voice-transcript" hidden>${item.transcript || ""}</p>
-      </div>
-    `
+    ? messageVoiceBlock(item, index)
     : "";
+  const companionTextVoice = !isUser && item.type === "text" ? messageVoiceBlock(item, index) : "";
   return `
     <article class="message-row ${isUser ? "is-user" : "is-companion"}">
       ${isUser ? "" : `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />`}
-      <div class="message-bubble">
-        ${media || voice || `<p>${item.text}</p>`}
-        <time>${item.time}</time>
+      <div class="message-content">
+        <div class="message-bubble">
+          ${media || voice || companionTextVoice || `<p>${item.text}</p>`}
+          <time>${item.time}</time>
+          ${isUnread ? `<span class="message-unread-dot" aria-label="Unread voice message"></span>` : ""}
+        </div>
+        ${isUser ? "" : messageActionBar()}
       </div>
       ${isUser ? `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />` : ""}
     </article>
@@ -495,7 +518,7 @@ function getIntimacyBottleLevel(value) {
 }
 
 function setIntimacyBottle(value, options = {}) {
-  const timeline = document.querySelector(".diary-timeline");
+  const timeline = document.querySelector(".message-panel");
   const bottle = document.querySelector(".intimacy-bottle");
   const image = bottle?.querySelector("img");
   if (!timeline || !bottle || !image) return;
@@ -524,7 +547,7 @@ function setIntimacyBottle(value, options = {}) {
 }
 
 function initIntimacyBottle() {
-  const timeline = document.querySelector(".diary-timeline");
+  const timeline = document.querySelector(".message-panel");
   const bottle = document.querySelector(".intimacy-bottle");
   if (!timeline || !bottle) return;
 
@@ -778,6 +801,7 @@ document.querySelectorAll(".message-voice").forEach((voice) => {
     event.stopPropagation();
     const src = voice.dataset.audio;
     if (!src) return;
+    voice.closest(".message-bubble")?.querySelector(".message-unread-dot")?.remove();
 
     if (activeChatVoice === voice && !chatVoiceAudio.paused) {
       chatVoiceAudio.pause();
@@ -867,6 +891,31 @@ document.querySelectorAll(".conversation-item").forEach((button) => {
   button.addEventListener("click", () => {
     document.querySelectorAll(".conversation-item").forEach((item) => item.classList.remove("is-active"));
     button.classList.add("is-active");
+  });
+});
+
+const chatWorkspace = document.querySelector(".chat-workspace");
+const conversationCollapseToggle = document.querySelector(".conversation-collapse-toggle");
+
+conversationCollapseToggle?.addEventListener("click", () => {
+  const isCollapsed = chatWorkspace?.classList.toggle("is-conversations-collapsed") || false;
+  conversationCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  conversationCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expand message list" : "Collapse message list");
+});
+
+document.querySelectorAll(".message-feedback-button").forEach((button) => {
+  button.addEventListener("click", () => {
+    const group = button.closest(".message-feedback");
+    const feedback = button.dataset.feedback;
+    const isActive = button.classList.contains("is-active");
+
+    if (feedback === "like" || feedback === "dislike") {
+      group?.querySelectorAll('[data-feedback="like"], [data-feedback="dislike"]').forEach((item) => {
+        if (item !== button) item.classList.remove("is-active");
+      });
+    }
+
+    button.classList.toggle("is-active", !isActive);
   });
 });
 
