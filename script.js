@@ -470,14 +470,12 @@ function messageRow(item, index = 0) {
   return `
     <article class="message-row ${isUser ? "is-user" : "is-companion"}">
       ${isUser ? "" : `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />`}
-      <div class="message-content">
-        <div class="message-bubble">
-          ${media || voice || companionTextVoice || `<p>${item.text}</p>`}
-          <time>${item.time}</time>
-          ${isUnread ? `<span class="message-unread-dot" aria-label="Unread voice message"></span>` : ""}
-        </div>
-        ${isUser ? "" : messageActionBar()}
+      <div class="message-bubble">
+        ${media || voice || companionTextVoice || `<p>${item.text}</p>`}
+        <time>${item.time}</time>
+        ${isUnread ? `<span class="message-unread-dot" aria-label="Unread voice message"></span>` : ""}
       </div>
+      ${isUser ? "" : messageActionBar()}
       ${isUser ? `<img class="message-avatar" src="${imageBase}${avatar}" alt="" />` : ""}
     </article>
   `;
@@ -892,6 +890,15 @@ document.querySelectorAll(".conversation-item").forEach((button) => {
     document.querySelectorAll(".conversation-item").forEach((item) => item.classList.remove("is-active"));
     button.classList.add("is-active");
   });
+});
+
+const appShell = document.querySelector(".app-shell");
+const sidebarCollapseToggle = document.querySelector(".sidebar-collapse-toggle");
+
+sidebarCollapseToggle?.addEventListener("click", () => {
+  const isCollapsed = appShell?.classList.toggle("is-sidebar-collapsed") || false;
+  sidebarCollapseToggle.setAttribute("aria-expanded", String(!isCollapsed));
+  sidebarCollapseToggle.setAttribute("aria-label", isCollapsed ? "Expand navigation" : "Collapse navigation");
 });
 
 const chatWorkspace = document.querySelector(".chat-workspace");
