@@ -16,7 +16,7 @@ export const companion = {
   fullName: "Chris Ait",
   lastChatted: "08-06-2026",
   avatar: "/assets/chris-avatar.jpeg",
-  entryImage: "/assets/chris-entry.png",
+  entryImage: "/assets/chris-entry-poster.jpg",
   entryVideo: "/assets/Chris_entry.mp4",
   chatBackground: "/assets/chat-bg.jpg",
   loginBackground: "/assets/login-modal-bg.jpg",
