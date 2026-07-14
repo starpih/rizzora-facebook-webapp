@@ -109,7 +109,7 @@ export function ChatExperience() {
             {sentMessages.map((message, index) => (
               <div key={`${message}-${index}`} className="flex justify-end">
                 <div>
-                  <div className="primary-gradient max-w-[292px] rounded-2xl px-4 py-3 text-[14px] leading-[1.45] text-white shadow-aura">
+                  <div className="max-w-[292px] rounded-2xl bg-gradient-to-r from-[#cf4e9c] to-[#8649bb] px-4 py-3 text-[14px] leading-[1.45] text-white shadow-[0_4px_8px_rgba(232,88,175,0.25)]">
                     {message}
                   </div>
                   <div className="mt-1 text-right text-[11px] text-rizzora-muted">Now</div>
@@ -161,7 +161,7 @@ function MessageBubble({
   return isUser ? (
     <div className="flex justify-end">
       <div>
-        <div className="primary-gradient max-w-[292px] rounded-2xl px-4 py-3 text-[14px] leading-[1.45] text-white shadow-aura">
+        <div className="max-w-[292px] rounded-2xl bg-gradient-to-r from-[#cf4e9c] to-[#8649bb] px-4 py-3 text-[14px] leading-[1.45] text-white shadow-[0_4px_8px_rgba(232,88,175,0.25)]">
           {message.text}
         </div>
         <div className="mt-1 text-right text-[11px] text-rizzora-muted">{message.time}</div>

@@ -1,5 +1,14 @@
 import type { Metadata, Viewport } from "next";
+import { Alegreya } from "next/font/google";
 import "./globals.css";
+
+const alegreya = Alegreya({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal"],
+  variable: "--font-alegreya",
+  display: "swap"
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://rizzora.com"),
@@ -27,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={alegreya.variable}>{children}</body>
     </html>
   );
 }

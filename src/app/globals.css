@@ -82,6 +82,12 @@ button {
   background: linear-gradient(135deg, #ffd66b 0%, #eaa52f 100%);
 }
 
+.romantic-copy {
+  font-family: var(--font-alegreya), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
 .hidden-scrollbar {
   scrollbar-width: none;
 }

@@ -78,7 +78,7 @@ export function CharacterEntry() {
           </p>
         </div>
         <div className="safe-bottom absolute inset-x-0 bottom-0 z-10 px-6">
-          <div className="mb-4 whitespace-pre-line text-[17px] font-semibold leading-[1.45] text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+          <div className="romantic-copy mb-4 whitespace-pre-line text-[16px] leading-[1.5] text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             {companion.entryCopy}
           </div>
           <Link
