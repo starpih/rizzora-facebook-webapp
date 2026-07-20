@@ -78,7 +78,7 @@ export function VipPage() {
   return (
     <PhoneShell>
       <main className="relative min-h-[100svh] overflow-y-auto bg-[rgba(52,48,79,0.8)] backdrop-blur-[5px] hidden-scrollbar">
-        <section className="relative min-h-[100svh] rounded-[12px] border border-[#403d66] bg-[linear-gradient(166deg,#36345a_5%,#1d1e39_72%)] px-4 pb-8 pt-4 shadow-[0_24px_64px_-12px_rgba(0,0,0,0.48)]">
+        <section className="relative min-h-[100svh] bg-[linear-gradient(166deg,#36345a_5%,#1d1e39_72%)] px-4 pb-8 pt-4">
           <header className="relative flex h-8 items-center justify-center">
             <Link
               href="/m/chat/main-character"
