@@ -3,14 +3,16 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MoreVertical, Send } from "lucide-react";
 import { companion, messages } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
-import { AuthModal, QuotaLimitModal, SubscriptionModal } from "./modals";
+import { AuthModal, QuotaLimitModal } from "./modals";
 
-type ModalState = "auth" | "quota" | "subscription" | null;
+type ModalState = "auth" | "quota" | null;
 
 export function ChatExperience() {
+  const router = useRouter();
   const [modal, setModal] = useState<ModalState>(null);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
   const [textQuota, setTextQuota] = useState(3);
@@ -141,11 +143,10 @@ export function ChatExperience() {
         {modal === "quota" && (
           <QuotaLimitModal
             onClose={() => setModal(null)}
-            onUpgrade={() => setModal("subscription")}
+            onUpgrade={() => router.push("/m/vip")}
             onAuth={() => setModal("auth")}
           />
         )}
-        {modal === "subscription" && <SubscriptionModal onClose={() => setModal(null)} />}
       </div>
     </PhoneShell>
   );
