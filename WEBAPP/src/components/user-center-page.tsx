@@ -69,9 +69,12 @@ export function UserCenterPage() {
             <div className="rounded-xl bg-[#191733] p-3 text-[13px] text-rizzora-muted">
               Automatic renewal: <span className="font-semibold text-white">{mockUser.renewal}</span>
             </div>
-            <button className="gold-gradient mt-4 h-12 w-full rounded-xl text-[15px] font-bold text-[#27192c]">
+            <Link
+              href="/m/vip"
+              className="gold-gradient mt-4 flex h-12 w-full items-center justify-center rounded-xl text-[15px] font-bold text-[#27192c]"
+            >
               Manage Automatic Renewal
-            </button>
+            </Link>
           </section>
 
           <section className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05]">
