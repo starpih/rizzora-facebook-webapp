@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MessageCircle, Volume2, VolumeX } from "lucide-react";
 import { companion } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
+import { AuthModal } from "./modals";
 
 export function CharacterEntry() {
+  const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -81,14 +84,24 @@ export function CharacterEntry() {
           <div className="romantic-copy mb-4 whitespace-pre-line text-[16px] leading-[1.5] text-white/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
             {companion.entryCopy}
           </div>
-          <Link
-            href="/m/chat/main-character"
+          <button
+            type="button"
+            onClick={() => setShowAuthModal(true)}
             className="primary-gradient flex h-16 w-full translate-y-0.5 items-center justify-center gap-2 rounded-full text-[21px] font-bold italic text-white shadow-[0_0_34px_rgba(234,78,184,0.72),0_16px_34px_rgba(0,0,0,0.38)] transition duration-150 ease-out active:translate-y-1.5 active:scale-[0.985] active:shadow-[0_0_18px_rgba(234,78,184,0.5),0_8px_18px_rgba(0,0,0,0.32)]"
           >
             <MessageCircle size={21} />
             Chat with {companion.name}
-          </Link>
+          </button>
         </div>
+        {showAuthModal && (
+          <AuthModal
+            onClose={() => setShowAuthModal(false)}
+            onSuccess={() => {
+              window.localStorage.setItem("rizzora-authenticated", "true");
+              router.push("/m/chat/main-character");
+            }}
+          />
+        )}
       </div>
     </PhoneShell>
   );

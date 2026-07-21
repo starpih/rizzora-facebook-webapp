@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PhoneShell } from "./phone-shell";
 
 const vipPlans = [
@@ -61,12 +62,15 @@ const vipBenefits = [
 ];
 
 export function VipPage() {
+  const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState("quarterly");
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [shakeAgreement, setShakeAgreement] = useState(false);
 
   function handleGetPremium() {
     if (agreementChecked) {
+      window.localStorage.setItem("rizzora-vip", "true");
+      router.push("/m/chat/main-character");
       return;
     }
 

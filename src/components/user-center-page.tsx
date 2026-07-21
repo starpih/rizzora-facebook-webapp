@@ -24,7 +24,7 @@ export function UserCenterPage() {
     <PhoneShell>
       <div className="relative min-h-[100svh] overflow-y-auto bg-rizzora-bg hidden-scrollbar">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(234,78,184,0.2),transparent_20rem)]" />
-        <header className="sticky top-0 z-20 flex h-[68px] items-center gap-3 border-b border-white/10 bg-[#1f1d3d]/70 px-4 backdrop-blur-[10px]">
+        <header className="sticky top-0 z-20 flex h-[68px] items-center gap-3 px-4">
           <Link
             href="/m/chat/main-character"
             className="grid size-8 place-items-center rounded-full bg-rizzora-pink/20 text-rizzora-pink transition active:scale-95"
@@ -78,8 +78,8 @@ export function UserCenterPage() {
           </section>
 
           <section className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05]">
-            <MenuItem icon={ShieldCheck} label="Privacy & Security" />
-            <MenuItem icon={Bell} label="Notifications" />
+            <MenuItem href="/m/privacy-security" icon={ShieldCheck} label="Privacy & Security" />
+            <MenuItem href="/m/notifications" icon={Bell} label="Notifications" />
           </section>
 
           <button className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.05] text-[15px] font-bold text-rizzora-muted transition active:scale-[0.99]">
@@ -93,19 +93,21 @@ export function UserCenterPage() {
 }
 
 function MenuItem({
+  href,
   icon: Icon,
   label
 }: {
+  href: string;
   icon: React.ComponentType<{ size?: number }>;
   label: string;
 }) {
   return (
-    <button className="flex h-14 w-full items-center gap-3 border-b border-white/10 px-4 text-left last:border-b-0">
+    <Link href={href} className="flex h-14 w-full items-center gap-3 border-b border-white/10 px-4 text-left last:border-b-0">
       <span className="grid size-9 place-items-center rounded-xl bg-rizzora-pink/14 text-rizzora-pink">
         <Icon size={18} />
       </span>
       <span className="flex-1 text-[14px] font-semibold">{label}</span>
       <ChevronRight size={17} className="text-rizzora-muted" />
-    </button>
+    </Link>
   );
 }

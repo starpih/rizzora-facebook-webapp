@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Crown } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { PhoneShell } from "./phone-shell";
 
 type MembershipLegalTab = "benefits" | "renewal";
@@ -104,26 +104,9 @@ export function MembershipLegalPage() {
         </header>
 
         <main className="relative z-10 h-[calc(100svh-122px)] overflow-y-auto px-4 pb-8 pt-5 hidden-scrollbar">
-          <section className="glass-panel rounded-2xl p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="grid size-10 place-items-center rounded-xl bg-rizzora-gold/18 text-rizzora-gold">
-                <Crown size={20} />
-              </span>
-              <div>
-                <h2 className="text-[18px] font-bold">
-                  {activeTab === "benefits" ? "VIP Membership Benefits Agreement" : "Automatic renewal Agreement"}
-                </h2>
-                <p className="text-[12px] text-rizzora-muted">Rizzora MVP WebApp</p>
-              </div>
-            </div>
-            <p className="text-[13px] leading-[1.55] text-white/[0.78]">
-              This page is a product-facing MVP draft and should be reviewed by legal counsel before production launch.
-            </p>
-          </section>
-
-          <div className="mt-4 space-y-3">
+          <div className="space-y-5">
             {sections.map((section) => (
-              <section key={section.title} className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
+              <section key={section.title}>
                 <h3 className="text-[15px] font-bold text-white">{section.title}</h3>
                 <p className="mt-2 text-[13px] leading-[1.6] text-rizzora-muted">{section.body}</p>
               </section>
