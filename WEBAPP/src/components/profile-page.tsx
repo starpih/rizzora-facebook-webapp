@@ -9,13 +9,7 @@ import { PhoneShell } from "./phone-shell";
 export function ProfilePage() {
   return (
     <PhoneShell>
-      <div className="relative min-h-[100svh] overflow-y-auto bg-rizzora-bg hidden-scrollbar">
-        <header className="sticky top-0 z-20 flex h-[68px] items-center gap-3 border-b border-white/10 bg-[#1f1d3d]/95 px-4 backdrop-blur-xl">
-          <Link href="/m/chat/main-character" className="grid size-8 place-items-center rounded-full bg-rizzora-pink/20 text-rizzora-pink">
-            <ChevronLeft size={20} />
-          </Link>
-          <h1 className="text-[16px] font-bold">{companion.name}</h1>
-        </header>
+      <div className="relative h-[100svh] overflow-y-auto bg-rizzora-bg hidden-scrollbar">
         <section className="relative h-[340px]">
           <Image
             src={companion.profileImage}
@@ -25,7 +19,20 @@ export function ProfilePage() {
             sizes="393px"
             className="object-cover"
           />
+          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/45 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-rizzora-bg" />
+          <div className="absolute left-4 top-4 z-20 flex items-center gap-3">
+            <Link
+              href="/m/chat/main-character"
+              className="grid size-8 place-items-center rounded-full bg-rizzora-pink/20 text-rizzora-pink backdrop-blur-[10px] transition active:scale-95"
+              aria-label="Back to chat"
+            >
+              <ChevronLeft size={20} />
+            </Link>
+            <h1 className="text-[16px] font-bold text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]">
+              {companion.name}
+            </h1>
+          </div>
         </section>
         <section className="px-4 pb-8 pt-5">
           <h2 className="font-display text-[36px] font-bold leading-none text-white/75">{companion.fullName}</h2>

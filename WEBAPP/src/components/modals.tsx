@@ -10,6 +10,10 @@ type ModalProps = {
   onClose: () => void;
 };
 
+type AuthModalProps = ModalProps & {
+  onSuccess?: () => void;
+};
+
 function ModalFrame({
   children,
   onClose,
@@ -103,18 +107,39 @@ const planBenefits: Record<SubscriptionPlanId, string[]> = {
   ]
 };
 
-export function AuthModal({ onClose }: ModalProps) {
+export function AuthModal({ onClose, onSuccess }: AuthModalProps) {
   const [agreementChecked, setAgreementChecked] = useState(true);
   const [shakeAgreement, setShakeAgreement] = useState(false);
 
-  function handleFacebookLogin() {
-    if (agreementChecked) {
-      return;
-    }
-
+  function promptAgreement() {
     setShakeAgreement(false);
     window.setTimeout(() => setShakeAgreement(true), 0);
     window.setTimeout(() => setShakeAgreement(false), 320);
+  }
+
+  function handleFacebookLogin() {
+    if (!agreementChecked) {
+      promptAgreement();
+      return;
+    }
+
+    onSuccess?.();
+  }
+
+  function handleGoogleLogin() {
+    if (!agreementChecked) {
+      promptAgreement();
+      return;
+    }
+
+    const googleAuthUrl = process.env.NEXT_PUBLIC_GOOGLE_AUTH_URL;
+
+    if (googleAuthUrl) {
+      window.location.href = googleAuthUrl;
+      return;
+    }
+
+    onSuccess?.();
   }
 
   return (
@@ -137,12 +162,22 @@ export function AuthModal({ onClose }: ModalProps) {
           <button
             type="button"
             onClick={handleFacebookLogin}
-            className="mb-7 flex h-12 items-center justify-center gap-3 rounded-full bg-white text-[16px] font-bold text-[#181725] transition active:scale-[0.98]"
+            className="mb-3 flex h-12 items-center justify-center gap-3 rounded-full bg-white text-[16px] font-bold text-[#181725] transition active:scale-[0.98]"
           >
             <span className="grid size-6 place-items-center rounded-full bg-[#4267B2] text-white">
               <Facebook size={15} fill="white" />
             </span>
             Login with Facebook
+          </button>
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="mb-7 flex h-12 items-center justify-center gap-3 rounded-full border border-white/18 bg-white/12 text-[15px] font-bold text-white backdrop-blur-[10px] transition active:scale-[0.98]"
+          >
+            <span className="grid size-6 place-items-center rounded-full border border-[#dadce0] bg-white text-[15px] font-bold text-[#4285f4]">
+              G
+            </span>
+            Continue with Google
           </button>
           <label
             className={`flex items-start gap-3 text-left text-[13px] leading-[1.35] text-white ${shakeAgreement ? "agreement-shake" : ""}`}

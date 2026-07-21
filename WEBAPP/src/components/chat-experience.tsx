@@ -1,39 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MoreVertical, Send } from "lucide-react";
 import { companion, messages } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
-import { AuthModal, QuotaLimitModal } from "./modals";
-
-type ModalState = "auth" | "quota" | null;
+import { AuthModal } from "./modals";
 
 export function ChatExperience() {
   const router = useRouter();
-  const [modal, setModal] = useState<ModalState>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
-  const [textQuota, setTextQuota] = useState(3);
+  const [isVip, setIsVip] = useState(false);
+  const [textQuota, setTextQuota] = useState(30);
   const [draft, setDraft] = useState("");
   const [sentMessages, setSentMessages] = useState<string[]>([]);
 
-  const quotaLabel = useMemo(() => `${textQuota} messages left`, [textQuota]);
+  const hasChatAccess = isVip || textQuota > 0;
+  const quotaLabel = useMemo(() => (isVip ? "VIP active" : `${textQuota} messages left`), [isVip, textQuota]);
+
+  useEffect(() => {
+    if (window.localStorage.getItem("rizzora-authenticated") !== "true") {
+      setAuthModalOpen(true);
+    }
+    setIsVip(window.localStorage.getItem("rizzora-vip") === "true");
+  }, []);
 
   function sendText() {
-    if (textQuota <= 0) {
-      setModal("quota");
+    if (!hasChatAccess) {
+      router.push("/m/vip");
       return;
     }
     const next = draft.trim() || "I've been thinking about you all morning honestly 🙂";
     setSentMessages((items) => [...items, next]);
     setDraft("");
+    if (isVip) {
+      return;
+    }
     const remaining = textQuota - 1;
     setTextQuota(remaining);
-    if (remaining === 0) {
-      setModal("quota");
-    }
   }
 
   return (
@@ -66,13 +73,15 @@ export function ChatExperience() {
               <h1 className="text-[17px] font-bold">{companion.name}</h1>
               <p className="text-[11px] text-rizzora-muted">
                 {quotaLabel}
-                <button
-                  type="button"
-                  onClick={() => setModal("quota")}
-                  className="ml-1 font-semibold text-rizzora-pink"
-                >
-                  · Get more credits
-                </button>
+                {!isVip && (
+                  <button
+                    type="button"
+                    onClick={() => router.push("/m/vip")}
+                    className="ml-1 font-semibold text-rizzora-pink"
+                  >
+                    · Become VIP
+                  </button>
+                )}
               </p>
             </div>
           </div>
@@ -122,29 +131,39 @@ export function ChatExperience() {
         </section>
 
         <footer className="safe-bottom absolute inset-x-0 bottom-0 z-20 border-t border-white/10 bg-[#201e3c]/80 px-4 pt-4 backdrop-blur-[10px]">
-          <div className="flex h-[62px] items-center rounded-xl border border-white/10 bg-[#343052]/80 px-3 backdrop-blur-[10px] transition duration-150 focus-within:border-rizzora-pink/45 focus-within:bg-[#474166]/90 focus-within:shadow-[0_0_22px_rgba(234,78,184,0.22)]">
-            <input
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              placeholder={`Message ${companion.name}...`}
-              className="min-w-0 flex-1 bg-transparent px-2 text-[15px] text-white outline-none placeholder:text-rizzora-muted"
-            />
+          {hasChatAccess ? (
+            <div className="flex h-[62px] items-center rounded-xl border border-white/10 bg-[#343052]/80 px-3 backdrop-blur-[10px] transition duration-150 focus-within:border-rizzora-pink/45 focus-within:bg-[#474166]/90 focus-within:shadow-[0_0_22px_rgba(234,78,184,0.22)]">
+              <input
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                placeholder={`Message ${companion.name}...`}
+                className="min-w-0 flex-1 bg-transparent px-2 text-[15px] text-white outline-none placeholder:text-rizzora-muted"
+              />
+              <button
+                onClick={sendText}
+                className="primary-gradient ml-1 grid size-10 place-items-center rounded-full text-white aura-shadow"
+                aria-label="Send message"
+              >
+                <Send size={17} />
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={sendText}
-              className="primary-gradient ml-1 grid size-10 place-items-center rounded-full text-white aura-shadow"
-              aria-label="Send message"
+              type="button"
+              onClick={() => router.push("/m/vip")}
+              className="flex h-[62px] w-full items-center justify-center rounded-xl border border-[#f2b84b]/30 bg-[#343052]/90 px-4 text-center text-[15px] font-bold text-[#f2b84b] shadow-[0_0_22px_rgba(242,184,75,0.18)] backdrop-blur-[10px] transition active:scale-[0.98]"
             >
-              <Send size={17} />
+              Become VIP to keep chatting with {companion.name}
             </button>
-          </div>
+          )}
         </footer>
-
-        {modal === "auth" && <AuthModal onClose={() => setModal(null)} />}
-        {modal === "quota" && (
-          <QuotaLimitModal
-            onClose={() => setModal(null)}
-            onUpgrade={() => router.push("/m/vip")}
-            onAuth={() => setModal("auth")}
+        {authModalOpen && (
+          <AuthModal
+            onClose={() => router.push("/m/c/main-character")}
+            onSuccess={() => {
+              window.localStorage.setItem("rizzora-authenticated", "true");
+              setAuthModalOpen(false);
+            }}
           />
         )}
       </div>
