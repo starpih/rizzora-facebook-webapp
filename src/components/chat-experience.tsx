@@ -1,13 +1,27 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Send } from "lucide-react";
+import { ChevronRight, MoreVertical, Send } from "lucide-react";
 import { companion, messages } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
 import { AuthModal } from "./modals";
+
+const mockUser = {
+  name: "Mumu",
+  avatar: "/assets/user-avatar.png"
+};
+
+const usage = {
+  totalFreeMessages: 30,
+  monthlyCreditsPercent: 68,
+  extraCreditsPercent: {
+    free: 0,
+    vip: 92
+  }
+};
 
 export function ChatExperience() {
   const router = useRouter();
@@ -19,7 +33,8 @@ export function ChatExperience() {
   const [sentMessages, setSentMessages] = useState<string[]>([]);
 
   const hasChatAccess = isVip || textQuota > 0;
-  const quotaLabel = useMemo(() => (isVip ? "VIP active" : `${textQuota} messages left`), [isVip, textQuota]);
+  const freeMessagesPercent = Math.max(0, Math.round((textQuota / usage.totalFreeMessages) * 100));
+  const extraCreditsPercent = isVip ? usage.extraCreditsPercent.vip : usage.extraCreditsPercent.free;
 
   useEffect(() => {
     if (window.localStorage.getItem("rizzora-authenticated") !== "true") {
@@ -71,18 +86,6 @@ export function ChatExperience() {
             </Link>
             <div>
               <h1 className="text-[17px] font-bold">{companion.name}</h1>
-              <p className="text-[11px] text-rizzora-muted">
-                {quotaLabel}
-                {!isVip && (
-                  <button
-                    type="button"
-                    onClick={() => router.push("/m/vip")}
-                    className="ml-1 font-semibold text-rizzora-pink"
-                  >
-                    · Become VIP
-                  </button>
-                )}
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-rizzora-muted">
@@ -96,14 +99,13 @@ export function ChatExperience() {
             </button>
           </div>
           {showHeaderMenu && (
-            <div className="absolute right-4 top-[58px] z-50 w-40 overflow-hidden rounded-xl border border-white/10 bg-[#2d2a50]/95 p-1 shadow-panel backdrop-blur-[10px]">
-              <Link
-                href="/m/user-center"
-                className="block rounded-lg px-3 py-3 text-[14px] font-semibold text-white transition active:bg-white/10"
-              >
-                User Center
-              </Link>
-            </div>
+            <HeaderMenu
+              isVip={isVip}
+              freeMessagesLeft={textQuota}
+              freeMessagesPercent={freeMessagesPercent}
+              monthlyCreditsPercent={usage.monthlyCreditsPercent}
+              extraCreditsPercent={extraCreditsPercent}
+            />
           )}
         </header>
 
@@ -168,6 +170,124 @@ export function ChatExperience() {
         )}
       </div>
     </PhoneShell>
+  );
+}
+
+function HeaderMenu({
+  isVip,
+  freeMessagesLeft,
+  freeMessagesPercent,
+  monthlyCreditsPercent,
+  extraCreditsPercent
+}: {
+  isVip: boolean;
+  freeMessagesLeft: number;
+  freeMessagesPercent: number;
+  monthlyCreditsPercent: number;
+  extraCreditsPercent: number;
+}) {
+  return (
+    <div className="absolute right-4 top-[58px] z-50 w-[236px] overflow-hidden rounded-xl border border-white/10 bg-[#2d2a50]/95 p-1 shadow-panel backdrop-blur-[10px]">
+      <Link
+        href="/m/user-center"
+        className="flex items-center gap-3 rounded-lg px-3 py-3 text-white transition active:bg-white/10"
+      >
+        <Image
+          src={mockUser.avatar}
+          alt={mockUser.name}
+          width={30}
+          height={30}
+          className="size-[30px] rounded-full object-cover"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-semibold">{mockUser.name}</p>
+          <span
+            className={`mt-1 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+              isVip
+                ? "border-rizzora-gold/35 bg-rizzora-gold/12 text-rizzora-gold"
+                : "border-white/10 bg-white/[0.06] text-rizzora-muted"
+            }`}
+          >
+            {isVip ? "Premium" : "Free Account"}
+          </span>
+        </div>
+        <ChevronRight size={16} className="shrink-0 text-rizzora-muted" />
+      </Link>
+
+      <div className="border-t border-white/10">
+        {isVip ? (
+          <UsageMenuRow
+            title="Monthly Credits"
+            value={`${monthlyCreditsPercent}% remaining`}
+            percent={monthlyCreditsPercent}
+            tone="pink"
+          />
+        ) : (
+          <UsageMenuRow
+            title="Free Messages"
+            value={`${freeMessagesLeft} left`}
+            percent={freeMessagesPercent}
+            tone="pink"
+            actionHref="/m/vip"
+            actionLabel="Become Premium"
+          />
+        )}
+
+        <UsageMenuRow
+          title="Extra Credits"
+          value={`${extraCreditsPercent}% remaining`}
+          percent={extraCreditsPercent}
+          tone="gold"
+          actionHref="/m/recharge"
+          actionLabel="Recharge"
+        />
+      </div>
+    </div>
+  );
+}
+
+function UsageMenuRow({
+  title,
+  value,
+  percent,
+  tone,
+  actionHref,
+  actionLabel
+}: {
+  title: string;
+  value: string;
+  percent: number;
+  tone: "pink" | "gold";
+  actionHref?: string;
+  actionLabel?: string;
+}) {
+  const isGold = tone === "gold";
+
+  return (
+    <div className="px-3 py-3">
+      <div className="flex items-start justify-between gap-3 text-[12px] leading-[1.25]">
+        <div className="min-w-0">
+          <p className="truncate text-rizzora-muted">{title}</p>
+          <p className={`mt-1 font-bold ${isGold ? "text-rizzora-gold" : "text-rizzora-pink"}`}>{value}</p>
+        </div>
+        {actionHref && actionLabel && (
+          <Link
+            href={actionHref}
+            className={`shrink-0 whitespace-nowrap text-[12px] font-bold ${
+              isGold ? "text-rizzora-gold" : "text-rizzora-pink"
+            }`}
+          >
+            {actionLabel}
+          </Link>
+        )}
+      </div>
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+        <div
+          className={`h-full rounded-full ${isGold ? "gold-gradient" : "primary-gradient"}`}
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+    </div>
   );
 }
 

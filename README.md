@@ -1,354 +1,321 @@
 # Rizzora WebApp
 
-## 1. Project Purpose
+This folder contains the mobile-first frontend for the Rizzora Facebook acquisition MVP.
 
-This folder is reserved for the Rizzora WebApp frontend implementation.
+The current product focuses on one promoted AI companion, Chris. Users enter from Facebook, log in, chat with Chris through text, use free messages, and convert through Premium membership or Extra Credits top-up.
 
-The current MVP focuses on the Facebook acquisition flow. Users enter from Facebook profile links, posts, stories, reels, ads, or Messenger links, then land in a mobile-first WebApp experience and start chatting with one promoted AI companion.
-
-Current MVP scope:
-
-- Facebook traffic landing entry
-- Single promoted companion
-- Mobile-first WebApp pages
-- Text chat
-- Asynchronous voice message entry
-- Free quota display and deduction
-- Login / signup prompt
-- Quota limit prompt
-- Subscription prompt
-- User center / profile state
-
-Out of current MVP scope:
-
-- Full desktop Web experience
-- Multi-character marketplace
-- Real-time voice call
-- Real payment integration
-- Full backend admin
-- Full multilingual system
-
-## 2. Product Flow
+## Product Flow
 
 ```text
-Facebook
+Facebook traffic
 ↓
-WebApp Character Entry
+/m/c/main-character
 ↓
-WebApp Chat
+Chat with Chris
 ↓
-Free text / voice quota
+Auth Modal
 ↓
-Login or signup prompt
+Facebook Login or Continue with Google
 ↓
-More free quota or subscription prompt
+/m/chat/main-character
 ↓
-Continue chatting or stop
+30 Free Messages
+↓
+Free quota exhausted
+↓
+Premium prompt
+↓
+/m/vip
+↓
+Get Premium
+↓
+Back to Chat
 ```
 
-## 3. Planned Routes
+## Current Monetization Model
+
+Rizzora uses a fiat-to-Credits model.
+
+User-facing:
+
+- Free users receive `Free Messages`.
+- Premium users receive `Monthly Credits`.
+- All users may purchase `Extra Credits`.
+- Premium users receive a discount on Extra Credits top-ups.
+- User Center shows usage percentages, not raw Credits numbers.
+
+Backend-facing:
+
+- Credits map to internal AI/model token cost.
+- Model tokens are internal accounting units.
+- Do not expose token balance, token wallet, or token exchange concepts to users.
+
+## Current Routes
 
 ```text
 /m/c/main-character
 /m/chat/main-character
 /m/profile
+/m/user-center
+/m/user-center?state=vip
+/m/vip
+/m/recharge
+/m/subscription-management
+/m/subscription-management?tab=records
+/m/privacy-security
+/m/notifications
+/m/notifications?state=empty
+/m/legal?tab=privacy
+/m/legal?tab=terms
+/m/membership-legal?tab=benefits
+/m/membership-legal?tab=renewal
 ```
 
-Modal states:
+## Key Screens
 
-```text
-Auth Modal
-Quota Limit Modal
-Subscription Modal
-Voice Permission Modal
-Voice Unsupported State
-```
+### Character Entry
 
-## 4. Required Screens
-
-### 4.1 WebApp Character Entry
+Route: `/m/c/main-character`
 
 Purpose:
 
-- Receive Facebook mobile traffic
-- Show the promoted companion immediately
-- Let users start chatting without forced registration
+- Receive Facebook mobile traffic.
+- Show Chris immediately through the entry video.
+- Gate the chat flow behind login.
 
-Required UI:
+Main behavior:
 
-- Promoted companion visual
-- Rizzora branding
-- Companion name
-- Short romantic but safe value statement
-- Primary CTA: `Start Voice Chat` or `Chat with Chris`
-- Secondary CTA: `Text Him`
-- Privacy reassurance
+- `Chat with Chris` opens Auth Modal.
+- Video uses a poster frame to avoid old-image flash.
+- Sound can be toggled manually.
 
-Important rules:
-
-- Primary CTA must be visible in the first viewport
-- CTA should respect mobile safe area
-- Do not show complex navigation
-- Do not force login before first interaction
-
-### 4.2 WebApp Chat
+### Auth Modal
 
 Purpose:
 
-- Main conversion and retention surface
-- Let users experience text and voice interaction
-- Trigger login, quota, and subscription moments naturally
+- Require login before chat.
+- Explain that account creation helps Chris remember conversations.
 
-Required UI:
+Actions:
 
-- Companion header
-- Chat message list
-- Text composer
-- Voice action button
-- Message send button
-- Remaining quota indicator
-- Voice message bubble
-- Companion profile entry
+- `Login with Facebook`
+- `Continue with Google`
 
-Required states:
+Rules:
 
-- Empty / first message state
-- Sending
-- Send failed
-- Voice recording
-- Voice recording cancel
-- Microphone permission denied
-- Unsupported browser voice fallback
-- Quota low
-- Quota exhausted
+- Agreement checkbox is selected by default.
+- If unchecked, login click triggers a light shake.
+- Google auth reads `NEXT_PUBLIC_GOOGLE_AUTH_URL` when configured.
 
-### 4.3 Auth Modal
+### Chat
+
+Route: `/m/chat/main-character`
 
 Purpose:
 
-- Convert anonymous users after they have experienced value
-- Preserve chat memory and relationship continuity
+- Main text chat experience with Chris.
+- Show account and usage state in the top-right menu.
+- Convert free users after quota exhaustion.
 
-Recommended copy:
+Current behavior:
 
-```text
-Keep talking with Chris
+- Login is required.
+- MVP supports text messages only.
+- Free users start with 30 Free Messages.
+- Each sent user message consumes one Free Message.
+- Header shows Chris avatar and name only.
+- Chris avatar opens `/m/profile`.
+- The three-dot menu shows user account and usage state.
 
-Create an account so he can remember your conversations and get to know you better. Your account information is kept private.
-```
+Free Account menu:
 
-Required actions:
+- User avatar, user name, `Free Account`, right arrow
+- Free Messages remaining
+- `Become Premium`
+- Extra Credits remaining
+- `Recharge`
 
-- Login with Facebook
-- Other sign in options
-- Privacy agreement checkbox
-- Terms and privacy links
-- Close action
+Premium menu:
 
-### 4.4 Quota Limit Modal
+- User avatar, user name, `Premium`, right arrow
+- Monthly Credits remaining
+- Extra Credits remaining
+- `Recharge`
 
-Purpose:
+Color rule:
 
-- Explain that free quota has been used
-- Offer clear ways to continue
+- Free Messages: pink
+- Monthly Credits: pink
+- Extra Credits: gold
 
-Recommended copy:
+### VIP Membership Plan
 
-```text
-Your free voice chats are used up.
-
-Sign up to get more free chats, or upgrade to keep talking with Chris.
-```
-
-Required actions:
-
-- `Sign up for more free chats`
-- `Upgrade to keep talking`
-- `Maybe later`
-
-### 4.5 Subscription Modal
+Route: `/m/vip`
 
 Purpose:
 
-- Convert high-intent users after free quota is used
-- Sell continued companionship, not a generic feature bundle
+- Sell one Premium membership tier.
+- Let users select monthly, quarterly, or yearly billing.
 
-Recommended title:
+Important rule:
+
+- There is one VIP tier.
+- Monthly / Quarterly / Yearly are billing cycles, not different membership levels.
+
+Benefit copy:
 
 ```text
-Choose Your Plan
+50% off your first billing period. Renews at the regular price from the next cycle.
+VIP membership - Auto-renews, cancel anytime
+Generous monthly credits to keep chatting with Chris
+VIP discount on extra Credit top-ups
+Enhanced memory - Chris remembers you better over time
 ```
 
-Recommended subtitle:
+### User Center
 
-```text
-Build a deeper connection with your AI companion and continue your private voice moments.
-```
-
-Implementation notes:
-
-- Avoid promising unlimited usage unless backend quota and cost controls support it
-- Prefer clear voice credits or message quotas
-- Show renewal and cancellation terms before payment
-- MVP may use mock payment state
-
-### 4.6 User Center / Profile
+Route: `/m/user-center`
 
 Purpose:
 
-- Show account and subscription state
-- Let users subscribe, manage subscription, or log out
+- Show account state.
+- Provide subscription, recharge, privacy, notifications, and logout entries.
 
-Required UI:
+Free Account state:
 
-- User avatar
-- User name
-- Membership state
-- Remaining text quota
-- Remaining voice quota
-- Subscribe or manage subscription action
-- Log out action
+- Gray `Free Account` label
+- `Free Plan` membership card
+- `Become VIP`
+- Extra Credits percentage and `Recharge Credits`
 
-## 5. Voice Interaction Scope
+Premium state:
 
-MVP supports asynchronous voice messages, not real-time voice calls.
+- Gold `Premium` label
+- `VIP Plan · Quarterly Billing`
+- Yellow `Crown.svg`
+- `View Plan`
+- `Manage Renewal`
+- Monthly Credits percentage with `Resets on ***`
+- Extra Credits percentage and `Recharge Credits`
 
-Recommended P0 behavior:
+Display rules:
 
-```text
-Tap voice button
-↓
-Request microphone permission
-↓
-Record short voice message
-↓
-Send voice message
-↓
-AI returns text and/or playable voice reply
+- Do not show email.
+- Do not show Account information.
+- Do not show raw Credits or Points numbers.
+- Do not show backend Tokens.
+
+### Recharge Credits
+
+Route: `/m/recharge`
+
+Purpose:
+
+- Let users buy Extra Credits.
+
+Behavior:
+
+- Users may freely enter a USD amount.
+- Quick amount buttons are available.
+- `Pay Now` creates checkout.
+- `NEXT_PUBLIC_PAYMENT_CHECKOUT_URL` is used when configured.
+- Local preview uses mock success if no checkout URL exists.
+
+### Subscription Management
+
+Route: `/m/subscription-management`
+
+Purpose:
+
+- Let Premium users manage renewal and view purchase records.
+
+Tabs:
+
+- Subscription
+- Purchase Records
+
+Subscription tab shows:
+
+- Current plan
+- Billing type
+- Next renewal date
+- Next renewal amount
+- Payment method
+- Cancel auto-renewal action
+
+Purchase Records tab shows:
+
+- Subscription type
+- Price
+- Charged time
+- Order ID
+- Payment method
+
+## Local Preview
+
+Install and run:
+
+```bash
+npm install
+npm run dev
 ```
 
-Fallback behavior:
-
-- If microphone is denied, continue with text chat
-- If browser does not support recording, show text fallback
-- If opened inside an unstable in-app browser, suggest opening in Safari or Chrome
-
-## 6. Analytics Events
-
-Recommended events:
+Open:
 
 ```text
-facebook_link_clicked
-webapp_entry_viewed
-chat_page_entered
-first_message_sent
-voice_button_clicked
-voice_permission_requested
-voice_permission_denied
-voice_message_sent
-quota_low_shown
-quota_exhausted
-auth_modal_shown
-signup_started
-signup_completed
-subscription_modal_shown
-plan_selected
-mock_payment_completed
-payment_abandoned
+http://localhost:3000/m/c/main-character
 ```
 
-## 7. Source Documents
+Preview Free Account Chat:
 
-Product and design references:
+```js
+localStorage.removeItem("rizzora-vip")
+localStorage.setItem("rizzora-authenticated", "true")
+location.reload()
+```
 
-- `../docs/PRD_MVP.md`
-- `../docs/PRODUCT_SPEC.md`
-- `../docs/DESIGN_SYSTEM_BRIEF.md`
-- `../docs/FIGMA_AUDIT_TASK.md`
+Preview Premium Chat:
 
-Figma reference:
+```js
+localStorage.setItem("rizzora-vip", "true")
+localStorage.setItem("rizzora-authenticated", "true")
+location.reload()
+```
+
+## Environment Variables
 
 ```text
-WEB / 04 FB Screens
+NEXT_PUBLIC_GOOGLE_AUTH_URL=
+NEXT_PUBLIC_PAYMENT_CHECKOUT_URL=
 ```
 
-## 8. Design Direction
-
-The WebApp should follow the Rizzora design direction:
-
-- Romantic dark luxury
-- Premium
-- Emotional
-- Female-friendly
-- Private
-- Safe
-- Soft but not childish
-- Attractive but not vulgar
-
-Avoid:
-
-- Cheap dating app style
-- Live-streaming platform style
-- Nightclub visual language
-- Overly sexualized imagery or copy
-- Heavy black-red adult style
-- Random neon effects
-
-## 9. Development Notes
-
-Current frontend stack:
+## Implementation Stack
 
 - Next.js App Router
 - React
 - TypeScript
 - Tailwind CSS
-- TanStack Query reserved for API state integration
-- Zustand reserved for shared client UI state if needed
-- Browser Media APIs reserved for voice recording
+- Mobile-first WebApp layout
+- Mock local state for login, Premium, quota, and payment preview
 
-Implementation direction:
-
-- Mobile-first layout
-- Fixed app viewport behavior
-- Safe area support for iOS and Android browsers
-- Keyboard-aware composer behavior
-- Token-based colors, spacing, radius, and typography
-- Componentized modal and message states
-- Clear separation between mock data and future API integration
-
-Current structure:
+## Handoff Documents
 
 ```text
-WEBAPP/
-  README.md
-  package.json
-  src/
-    app/
-    components/
-    lib/
-  public/
-    assets/
+../docs/PRD_MVP.md
+../docs/PRODUCT_DOCUMENTATION.md
+../docs/PRODUCT_SPEC.md
 ```
 
-## 10. Current Status
+## Next Backend Work
 
-Status: initial WebApp frontend implemented with mock data.
+- Real Facebook Login
+- Real Google OAuth
+- User/session API
+- Chat API
+- Credits ledger
+- Payment checkout
+- Payment webhook
+- Subscription management API
+- Purchase record API
+- Analytics events
 
-Implemented:
-
-- WebApp Character Entry
-- WebApp Chat
-- WebApp Profile for Chris Ait
-- Auth Modal
-- Quota Limit Modal
-- Subscription Modal
-- Voice state sheet
-- Mock quota deduction
-- Mock message sending
-
-Next step:
-
-- Connect backend APIs
-- Connect Facebook Login
-- Connect analytics events
-- Replace mock quota and subscription state with real backend state
