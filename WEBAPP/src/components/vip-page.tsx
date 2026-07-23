@@ -36,28 +36,23 @@ const vipPlans = [
 const vipBenefits = [
   {
     id: "discount",
-    content: (
-      <>
-        <span className="text-[#f2b84b]">50% off your first month.</span>{" "}
-        <span>Renews at the regular price from the scond time.</span>
-      </>
-    )
+    content: "50% off your first billing period. Renews at the regular price from the next cycle."
   },
   {
     id: "renewal",
     content: "VIP membership - Auto-renews, cancel anytime"
   },
   {
-    id: "messages",
-    content: (
-      <>
-        <strong className="font-bold text-[#f2b84b]">Unlimited</strong> heartwarming message replies
-      </>
-    )
+    id: "monthly-credits",
+    content: "Generous monthly credits to keep chatting with Chris"
+  },
+  {
+    id: "top-up-discount",
+    content: "VIP discount on extra Credit top-ups"
   },
   {
     id: "memory",
-    content: "Excellent memory - just like a close friend"
+    content: "Enhanced memory - Chris remembers you better over time"
   }
 ];
 
