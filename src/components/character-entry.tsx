@@ -58,7 +58,8 @@ export function CharacterEntry() {
           loop
           muted={muted}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#28133b]/80 via-transparent to-[#16142b]" />
+        <div className="absolute inset-x-0 top-0 h-[126px] bg-gradient-to-b from-[#28133b]/72 via-[#28133b]/28 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-t from-[#16142b] via-[#16142b]/52 to-transparent" />
         <button
           type="button"
           onClick={toggleSound}

@@ -20,7 +20,7 @@ export function ProfilePage() {
             className="object-cover"
           />
           <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/45 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-rizzora-bg" />
+          <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-rizzora-bg via-rizzora-bg/50 to-transparent" />
           <div className="absolute left-4 top-4 z-20 flex items-center gap-3">
             <Link
               href="/m/chat/main-character"
