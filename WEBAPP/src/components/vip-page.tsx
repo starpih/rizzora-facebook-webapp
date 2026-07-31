@@ -59,11 +59,12 @@ const vipBenefits = [
 export function VipPage() {
   const router = useRouter();
   const [selectedPlan, setSelectedPlan] = useState("quarterly");
-  const [agreementChecked, setAgreementChecked] = useState(false);
+  const [paymentAgreementChecked, setPaymentAgreementChecked] = useState(false);
+  const [dataAuthorizationChecked, setDataAuthorizationChecked] = useState(false);
   const [shakeAgreement, setShakeAgreement] = useState(false);
 
   function handleGetPremium() {
-    if (agreementChecked) {
+    if (paymentAgreementChecked && dataAuthorizationChecked) {
       window.localStorage.setItem("rizzora-vip", "true");
       router.push("/m/chat/main-character");
       return;
@@ -153,26 +154,41 @@ export function VipPage() {
             Get Premium
           </button>
 
-          <label
-            className={`mt-4 flex min-h-10 items-start gap-2 text-[12px] leading-4 text-[#f5f2fa] ${shakeAgreement ? "agreement-shake" : ""}`}
-          >
-            <input
-              type="checkbox"
-              checked={agreementChecked}
-              onChange={(event) => setAgreementChecked(event.target.checked)}
-              className="mt-1 size-5 shrink-0 appearance-none border-2 border-[#403d66] bg-[#1d1e39] checked:border-[#e858af] checked:bg-[#e858af]"
-            />
-            <span className="min-w-0 flex-1">
-              I agree to the{" "}
-              <Link href="/m/membership-legal?tab=benefits" className="font-bold text-[#ff5fbd]">
-                VIP Membership Benefits Agreement
-              </Link>{" "}
-              and{" "}
-              <Link href="/m/membership-legal?tab=renewal" className="font-bold text-[#ff5fbd]">
-                Automatic renewal Agreement
-              </Link>
-            </span>
-          </label>
+          <div className={`mt-4 space-y-3 ${shakeAgreement ? "agreement-shake" : ""}`}>
+            <label className="flex min-h-8 items-start gap-2 text-[12px] leading-4 text-[#f5f2fa]">
+              <input
+                type="checkbox"
+                checked={paymentAgreementChecked}
+                onChange={(event) => setPaymentAgreementChecked(event.target.checked)}
+                className="mt-1 size-5 shrink-0 appearance-none border-2 border-[#403d66] bg-[#1d1e39] checked:border-[#e858af] checked:bg-[#e858af]"
+              />
+              <span className="min-w-0 flex-1">
+                I agree to the{" "}
+                <Link href="/m/membership-legal?tab=payment" className="font-bold text-[#ff5fbd]">
+                  Payment Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/m/membership-legal?tab=refund" className="font-bold text-[#ff5fbd]">
+                  Refund Policy
+                </Link>
+              </span>
+            </label>
+
+            <label className="flex min-h-8 items-start gap-2 text-[12px] leading-4 text-[#f5f2fa]">
+              <input
+                type="checkbox"
+                checked={dataAuthorizationChecked}
+                onChange={(event) => setDataAuthorizationChecked(event.target.checked)}
+                className="mt-1 size-5 shrink-0 appearance-none border-2 border-[#403d66] bg-[#1d1e39] checked:border-[#e858af] checked:bg-[#e858af]"
+              />
+              <span className="min-w-0 flex-1">
+                I agree to the{" "}
+                <Link href="/m/data-authorization" className="font-bold text-[#ff5fbd]">
+                  Data Authorization Statement
+                </Link>
+              </span>
+            </label>
+          </div>
         </section>
       </main>
     </PhoneShell>

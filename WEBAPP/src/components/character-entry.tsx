@@ -1,11 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MessageCircle, Volume2, VolumeX } from "lucide-react";
 import { companion } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
 import { AuthModal } from "./modals";
+
+const footerLinks = [
+  { label: "About Us", href: "/m/about-us" },
+  { label: "Privacy Policy", href: "/m/legal?tab=privacy" },
+  { label: "Terms of Service", href: "/m/legal?tab=terms" },
+  { label: "Payment Terms", href: "/m/membership-legal?tab=payment" },
+  { label: "Refund Policy", href: "/m/membership-legal?tab=refund" },
+  { label: "Data Authorization Statement", href: "/m/data-authorization" }
+];
 
 export function CharacterEntry() {
   const router = useRouter();
@@ -93,6 +103,20 @@ export function CharacterEntry() {
             <MessageCircle size={21} />
             Chat with {companion.name}
           </button>
+          <nav
+            aria-label="Legal and company links"
+            className="mx-auto mt-3 flex max-w-full gap-4 overflow-x-auto px-1 pb-1 hidden-scrollbar"
+          >
+            {footerLinks.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="shrink-0 whitespace-nowrap text-[11px] font-semibold leading-[1.6] text-white/68 underline-offset-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.45)] transition active:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
         </div>
         {showAuthModal && (
           <AuthModal
