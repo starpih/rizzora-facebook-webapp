@@ -191,11 +191,11 @@ export function AuthModal({ onClose, onSuccess }: AuthModalProps) {
             <span>
               I agree to the{" "}
               <Link className="font-bold text-rizzora-pink" href="/m/legal?tab=privacy">
-                Privacy Agreement
+                Privacy Policy
               </Link>{" "}
               and{" "}
               <Link className="font-bold text-rizzora-pink" href="/m/legal?tab=terms">
-                Terms of User
+                Terms of Service
               </Link>
             </span>
           </label>
@@ -380,12 +380,16 @@ export function SubscriptionModal({ onClose }: ModalProps) {
           />
           <span>
             I agree to the{" "}
-            <Link href="/m/membership-legal?tab=benefits" className="font-bold text-rizzora-pink">
-              VIP Membership Benefits Agreement
+            <Link href="/m/membership-legal?tab=payment" className="font-bold text-rizzora-pink">
+              Payment Terms
             </Link>{" "}
             and{" "}
-            <Link href="/m/membership-legal?tab=renewal" className="font-bold text-rizzora-pink">
-              Automatic renewal Agreement
+            <Link href="/m/membership-legal?tab=refund" className="font-bold text-rizzora-pink">
+              Refund Policy
+            </Link>
+            , and I agree to the{" "}
+            <Link href="/m/data-authorization" className="font-bold text-rizzora-pink">
+              Data Authorization Statement
             </Link>
           </span>
         </label>

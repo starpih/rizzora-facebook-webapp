@@ -3,63 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { privacyPolicySections, termsOfServiceSections } from "@/lib/legal-content";
 import { PhoneShell } from "./phone-shell";
 
 type LegalTab = "privacy" | "terms";
-
-const privacySections = [
-  {
-    title: "1. Information We Use",
-    body: "Rizzora uses basic account information, such as your display name, avatar, login provider identifier, and subscription status, to provide a private and personal companion experience. If you log in with Facebook, we may receive the information you authorize through Facebook Login."
-  },
-  {
-    title: "2. Conversation Memory",
-    body: "When you create an account, Chris can remember your conversations and get to know you better over time. This memory is used to keep the experience continuous, personal, and emotionally relevant."
-  },
-  {
-    title: "3. Private Information",
-    body: "We do not ask for sensitive private information such as government IDs, financial account numbers, health records, or precise location for this MVP experience. Please avoid sending sensitive personal information in chat."
-  },
-  {
-    title: "4. How We Protect Your Experience",
-    body: "We use reasonable technical and organizational measures to protect account access, conversation continuity, subscription state, and product analytics from unauthorized access or misuse."
-  },
-  {
-    title: "5. Product Analytics",
-    body: "We may collect product events such as page views, message actions, quota prompts, login prompts, and subscription prompts to understand whether the Facebook acquisition flow is working and to improve the WebApp experience."
-  },
-  {
-    title: "6. Your Choices",
-    body: "You can stop using the service at any time, log out from the user center, or manage subscription renewal where available. Future versions may include fuller account deletion and memory management controls."
-  }
-];
-
-const termsSections = [
-  {
-    title: "1. Service Description",
-    body: "Rizzora is an AI virtual companion WebApp. The current MVP provides a mobile-first experience where users can enter from Facebook, chat with one promoted companion, create an account, and view subscription prompts."
-  },
-  {
-    title: "2. Eligibility",
-    body: "You should only use Rizzora if you are legally allowed to use online digital services in your location. You are responsible for complying with local laws and platform rules."
-  },
-  {
-    title: "3. AI Companion Content",
-    body: "Responses are generated for companionship and entertainment. They should not be treated as professional advice, medical advice, legal advice, financial advice, or emergency support."
-  },
-  {
-    title: "4. User Conduct",
-    body: "You agree not to use Rizzora to submit illegal, harmful, abusive, exploitative, or privacy-invasive content. The service is designed to feel romantic, private, and emotionally supportive while remaining respectful and safe."
-  },
-  {
-    title: "5. Free Quota and Subscription",
-    body: "The MVP may provide free message quota and subscription prompts. Pricing, renewal terms, benefits, and cancellation controls should be reviewed before purchase when real payment is enabled."
-  },
-  {
-    title: "6. Changes to the Service",
-    body: "Rizzora may adjust features, quota rules, subscription benefits, companion behavior, or available pages as the MVP evolves. Material changes should be reflected in the product and supporting documents."
-  }
-];
 
 export function LegalPage() {
   const [activeTab, setActiveTab] = useState<LegalTab>("privacy");
@@ -71,7 +18,7 @@ export function LegalPage() {
     }
   }, []);
 
-  const sections = activeTab === "privacy" ? privacySections : termsSections;
+  const sections = activeTab === "privacy" ? privacyPolicySections : termsOfServiceSections;
 
   return (
     <PhoneShell>
@@ -80,30 +27,36 @@ export function LegalPage() {
         <header className="relative z-20 border-b border-white/10 bg-[#1f1d3d]/80 px-4 pb-3 pt-4 backdrop-blur-[10px]">
           <div className="mb-4 flex h-10 items-center gap-3">
             <Link
-              href="/m/chat/main-character"
+              href="/m/c/main-character"
               className="grid size-8 place-items-center rounded-full bg-rizzora-pink/20 text-rizzora-pink transition active:scale-95"
-              aria-label="Back to chat"
+              aria-label="Back to entry"
             >
               <ChevronLeft size={20} />
             </Link>
             <div>
-              <h1 className="text-[16px] font-bold">Legal Agreements</h1>
+              <h1 className="text-[16px] font-bold">Privacy Policy / Terms of Service</h1>
               <p className="text-[11px] text-rizzora-muted">Review before continuing</p>
             </div>
           </div>
           <div className="grid h-11 grid-cols-2 rounded-xl bg-[#171632] p-1">
-            <button
+            <Link
+              href="/m/legal?tab=privacy"
               onClick={() => setActiveTab("privacy")}
-              className={`rounded-lg text-[13px] font-bold transition ${activeTab === "privacy" ? "primary-gradient text-white" : "text-rizzora-muted"}`}
+              className={`flex items-center justify-center rounded-lg text-[12px] font-bold transition ${
+                activeTab === "privacy" ? "primary-gradient text-white" : "text-rizzora-muted"
+              }`}
             >
-              Privacy Agreement
-            </button>
-            <button
+              Privacy Policy
+            </Link>
+            <Link
+              href="/m/legal?tab=terms"
               onClick={() => setActiveTab("terms")}
-              className={`rounded-lg text-[13px] font-bold transition ${activeTab === "terms" ? "primary-gradient text-white" : "text-rizzora-muted"}`}
+              className={`flex items-center justify-center rounded-lg text-[12px] font-bold transition ${
+                activeTab === "terms" ? "primary-gradient text-white" : "text-rizzora-muted"
+              }`}
             >
-              Terms of User
-            </button>
+              Terms of Service
+            </Link>
           </div>
         </header>
 
@@ -112,7 +65,7 @@ export function LegalPage() {
             {sections.map((section) => (
               <section key={section.title}>
                 <h3 className="text-[15px] font-bold text-white">{section.title}</h3>
-                <p className="mt-2 text-[13px] leading-[1.6] text-rizzora-muted">{section.body}</p>
+                <p className="mt-2 whitespace-pre-line text-[13px] leading-[1.6] text-rizzora-muted">{section.body}</p>
               </section>
             ))}
           </div>
