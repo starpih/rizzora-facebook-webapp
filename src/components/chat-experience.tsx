@@ -250,7 +250,7 @@ export function ChatExperience() {
                 <span className="wish-bottle-tap-spark wish-bottle-tap-spark-four" />
               </span>
             )}
-            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={42} />
+            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={52} />
           </button>
         </div>
 

@@ -131,7 +131,7 @@ button {
   position: relative;
   flex: 0 0 auto;
   isolation: isolate;
-  opacity: 0.8;
+  opacity: 1;
   transition: filter 760ms ease, transform 760ms ease;
 }
 
@@ -232,6 +232,86 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+.wish-bottle-liquid,
+.wish-bottle-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.wish-bottle-liquid {
+  z-index: 1;
+  overflow: visible;
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--wish-liquid) 58%, transparent));
+  animation: wish-bottle-liquid-glow 2.7s ease-in-out infinite;
+  will-change: filter;
+}
+
+.wish-bottle-liquid-fill {
+  opacity: 0.9;
+}
+
+.wish-bottle-liquid-wave,
+.wish-bottle-liquid-wave-back {
+  fill: var(--wish-liquid);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wish-bottle-liquid-sway 2.2s cubic-bezier(0.44, 0.02, 0.56, 0.98) infinite alternate;
+  will-change: transform;
+}
+
+.wish-bottle-liquid-wave { opacity: 0.98; }
+
+.wish-bottle-liquid-wave-back {
+  opacity: 0.5;
+  animation-duration: 2.45s;
+  animation-direction: alternate-reverse;
+}
+
+.wish-bottle-liquid-shine {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  opacity: 0.65;
+  animation: wish-bottle-liquid-shine 2.2s ease-in-out infinite alternate;
+}
+
+.wish-bottle-frame {
+  z-index: 2;
+  object-fit: contain;
+  opacity: 0.56;
+  mix-blend-mode: screen;
+}
+
+@keyframes wish-bottle-liquid-sway {
+  from { transform: translateX(-3px) translateY(1.1px) rotate(-0.9deg); }
+  to { transform: translateX(3px) translateY(-1.1px) rotate(0.9deg); }
+}
+
+@keyframes wish-bottle-liquid-shine {
+  from { transform: translateX(-5px); opacity: 0.24; }
+  to { transform: translateX(5px); opacity: 0.9; }
+}
+
+@keyframes wish-bottle-liquid-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 1px color-mix(in srgb, var(--wish-liquid) 34%, transparent));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--wish-liquid) 88%, transparent));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wish-bottle-liquid-wave,
+  .wish-bottle-liquid-wave-back,
+  .wish-bottle-liquid-shine,
+  .wish-bottle-liquid { animation: none; }
 }
 
 .wish-bottle-glow {
