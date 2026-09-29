@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, MoreVertical, Send } from "lucide-react";
 import { companion, messages } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
-import { AuthModal } from "./modals";
+import { AuthModal, OutOfStaminaModal } from "./modals";
+import { WishBottle } from "./wish-bottle";
 
 const mockUser = {
   name: "Mumu",
@@ -15,7 +16,7 @@ const mockUser = {
 };
 
 const usage = {
-  totalFreeMessages: 30,
+  dailyFreeMessages: 10,
   monthlyCreditsPercent: 68,
   extraCreditsPercent: {
     free: 0,
@@ -23,17 +24,51 @@ const usage = {
   }
 };
 
+const mockReplies = [
+  "I’m here with you. Tell me what has been on your mind.",
+  "That sounds like something worth holding onto. I’m listening.",
+  "Then let’s make this moment a little softer together.",
+  "I like hearing the little details. They make you feel closer somehow."
+];
+
+type LocalChatMessage = {
+  id: string;
+  sender: "user" | "companion";
+  text: string;
+  time: string;
+};
+
+type ParticlePath = {
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  deltaX: number;
+  deltaY: number;
+};
+
 export function ChatExperience() {
   const router = useRouter();
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
   const [isVip, setIsVip] = useState(false);
-  const [textQuota, setTextQuota] = useState(30);
+  const [dailyMessagesLeft, setDailyMessagesLeft] = useState(usage.dailyFreeMessages);
+  const [staminaModalOpen, setStaminaModalOpen] = useState(false);
   const [draft, setDraft] = useState("");
-  const [sentMessages, setSentMessages] = useState<string[]>([]);
+  const [localMessages, setLocalMessages] = useState<LocalChatMessage[]>([]);
+  const [isReplying, setIsReplying] = useState(false);
+  const [bottleReplies, setBottleReplies] = useState(0);
+  const [isBottleAnimating, setIsBottleAnimating] = useState(false);
+  const pageRootRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLElement>(null);
+  const bottleAnchorRef = useRef<HTMLDivElement>(null);
+  const latestAssistantRef = useRef<HTMLDivElement>(null);
+  const [particlePath, setParticlePath] = useState<ParticlePath | null>(null);
 
-  const hasChatAccess = isVip || textQuota > 0;
-  const freeMessagesPercent = Math.max(0, Math.round((textQuota / usage.totalFreeMessages) * 100));
+  const hasChatAccess = isVip || dailyMessagesLeft > 0;
+  const canSend = !isReplying;
+  const showComposer = true;
+  const freeMessagesPercent = Math.max(0, Math.round((dailyMessagesLeft / usage.dailyFreeMessages) * 100));
   const extraCreditsPercent = isVip ? usage.extraCreditsPercent.vip : usage.extraCreditsPercent.free;
 
   useEffect(() => {
@@ -43,24 +78,93 @@ export function ChatExperience() {
     setIsVip(window.localStorage.getItem("rizzora-vip") === "true");
   }, []);
 
+  useLayoutEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const container = chatScrollRef.current;
+      if (!container) return;
+
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "auto"
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [localMessages.length, isReplying]);
+
+  useLayoutEffect(() => {
+    if (!isBottleAnimating) {
+      setParticlePath(null);
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const source = latestAssistantRef.current?.getBoundingClientRect();
+      const target = bottleAnchorRef.current?.getBoundingClientRect();
+      const root = pageRootRef.current?.getBoundingClientRect();
+      if (!source || !target || !root) return;
+
+      setParticlePath({
+        startX: source.left + source.width * 0.76 - root.left,
+        startY: source.top + 8 - root.top,
+        targetX: target.left + target.width * 0.5 - root.left,
+        targetY: target.top + target.height * 0.58 - root.top,
+        deltaX: target.left + target.width * 0.5 - (source.left + source.width * 0.76),
+        deltaY: target.top + target.height * 0.58 - (source.top + 8)
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isBottleAnimating, localMessages.length]);
+
   function sendText() {
+    if (!isVip && dailyMessagesLeft <= 0) {
+      setStaminaModalOpen(true);
+      return;
+    }
+
     if (!hasChatAccess) {
       router.push("/m/vip");
       return;
     }
+    if (isReplying) return;
+
     const next = draft.trim() || "I've been thinking about you all morning honestly 🙂";
-    setSentMessages((items) => [...items, next]);
+    setLocalMessages((items) => [
+      ...items,
+      {
+        id: `user-${Date.now()}`,
+        sender: "user",
+        text: next,
+        time: "Now"
+      }
+    ]);
     setDraft("");
-    if (isVip) {
-      return;
-    }
-    const remaining = textQuota - 1;
-    setTextQuota(remaining);
+
+    if (!isVip) setDailyMessagesLeft((remaining) => Math.max(0, remaining - 1));
+
+    setIsReplying(true);
+
+    window.setTimeout(() => {
+      setLocalMessages((items) => [
+        ...items,
+        {
+          id: `mock-reply-${Date.now()}`,
+          sender: "companion",
+          text: mockReplies[items.filter((item) => item.sender === "companion").length % mockReplies.length],
+          time: "Just now"
+        }
+      ]);
+      setIsReplying(false);
+      setBottleReplies((replies) => Math.min(30, replies + 1));
+      setIsBottleAnimating(true);
+      window.setTimeout(() => setIsBottleAnimating(false), 1450);
+    }, 850);
   }
 
   return (
     <PhoneShell>
-      <div className="relative flex h-[100svh] flex-col overflow-hidden bg-rizzora-bg">
+      <div ref={pageRootRef} className="relative flex h-[100svh] flex-col overflow-hidden bg-rizzora-bg">
         <Image
           src={companion.chatBackground}
           alt=""
@@ -101,7 +205,7 @@ export function ChatExperience() {
           {showHeaderMenu && (
             <HeaderMenu
               isVip={isVip}
-              freeMessagesLeft={textQuota}
+              freeMessagesLeft={dailyMessagesLeft}
               freeMessagesPercent={freeMessagesPercent}
               monthlyCreditsPercent={usage.monthlyCreditsPercent}
               extraCreditsPercent={extraCreditsPercent}
@@ -109,7 +213,20 @@ export function ChatExperience() {
           )}
         </header>
 
-        <section className="relative z-10 h-full overflow-y-auto px-4 pb-28 pt-[84px] hidden-scrollbar">
+        <div
+          ref={bottleAnchorRef}
+          className="pointer-events-none absolute right-4 top-[78px] z-20 drop-shadow-[0_8px_20px_rgba(220,70,160,0.28)]"
+        >
+          <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={42} />
+        </div>
+
+        {particlePath && <ReplyParticleBurst path={particlePath} />}
+
+        <section
+          ref={chatScrollRef}
+          className="relative z-10 h-full overflow-y-auto px-4 pb-28 pt-[84px] hidden-scrollbar"
+          aria-live="polite"
+        >
           <div className="mb-6 flex items-center gap-3 text-center text-[12px] text-rizzora-muted">
             <span className="h-px flex-1 bg-white/10" />
             Yesterday
@@ -119,31 +236,36 @@ export function ChatExperience() {
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
-            {sentMessages.map((message, index) => (
-              <div key={`${message}-${index}`} className="flex justify-end">
-                <div>
-                  <div className="max-w-[292px] rounded-2xl bg-gradient-to-r from-[#cf4e9c] to-[#8649bb] px-4 py-3 text-[14px] leading-[1.45] text-white shadow-[0_4px_8px_rgba(232,88,175,0.25)]">
-                    {message}
-                  </div>
-                  <div className="mt-1 text-right text-[11px] text-rizzora-muted">Now</div>
-                </div>
+            {localMessages.map((message) => (
+              <div
+                key={message.id}
+                ref={message.sender === "companion" ? latestAssistantRef : undefined}
+              >
+                <MessageBubble message={message} />
               </div>
             ))}
+            {isReplying && <TypingIndicator />}
+            <div className="h-px w-full" aria-hidden="true" />
           </div>
         </section>
 
         <footer className="safe-bottom absolute inset-x-0 bottom-0 z-20 border-t border-white/10 bg-[#201e3c]/80 px-4 pt-4 backdrop-blur-[10px]">
-          {hasChatAccess ? (
-            <div className="flex h-[62px] items-center rounded-xl border border-white/10 bg-[#343052]/80 px-3 backdrop-blur-[10px] transition duration-150 focus-within:border-rizzora-pink/45 focus-within:bg-[#474166]/90 focus-within:shadow-[0_0_22px_rgba(234,78,184,0.22)]">
+          {showComposer ? (
+            <div className={`flex h-[62px] items-center rounded-xl border border-white/10 bg-[#343052]/80 px-3 backdrop-blur-[10px] transition duration-150 focus-within:border-rizzora-pink/45 focus-within:bg-[#474166]/90 focus-within:shadow-[0_0_22px_rgba(234,78,184,0.22)] ${isReplying ? "opacity-80" : ""}`}>
               <input
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
-                placeholder={`Message ${companion.name}...`}
+                disabled={isReplying}
+                placeholder={isReplying ? `${companion.name} is replying...` : `Message ${companion.name}...`}
                 className="min-w-0 flex-1 bg-transparent px-2 text-[15px] text-white outline-none placeholder:text-rizzora-muted"
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") sendText();
+                }}
               />
               <button
                 onClick={sendText}
-                className="primary-gradient ml-1 grid size-10 place-items-center rounded-full text-white aura-shadow"
+                disabled={!canSend}
+                className="primary-gradient ml-1 grid size-10 place-items-center rounded-full text-white aura-shadow transition disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Send message"
               >
                 <Send size={17} />
@@ -168,8 +290,80 @@ export function ChatExperience() {
             }}
           />
         )}
+        {staminaModalOpen && (
+          <OutOfStaminaModal
+            onClose={() => setStaminaModalOpen(false)}
+            onUnlock={() => router.push("/m/vip")}
+            onSupplement={() => router.push("/m/recharge")}
+          />
+        )}
       </div>
     </PhoneShell>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-end gap-2" aria-label="Chris is replying">
+      <Image
+        src={companion.avatar}
+        alt={companion.name}
+        width={34}
+        height={34}
+        className="size-[34px] rounded-full object-cover"
+      />
+      <div className="flex h-[42px] items-center gap-1 rounded-2xl bg-[#393656] px-4">
+        <span className="reply-dot" />
+        <span className="reply-dot reply-dot-delay-1" />
+        <span className="reply-dot reply-dot-delay-2" />
+      </div>
+    </div>
+  );
+}
+
+function ReplyParticleBurst({ path }: { path: ParticlePath }) {
+  const particles = [
+    { x: -18, y: 4, delay: 0, scale: 1.15 },
+    { x: -11, y: -8, delay: 70, scale: 0.82 },
+    { x: -3, y: 5, delay: 140, scale: 1 },
+    { x: 7, y: -7, delay: 210, scale: 0.74 },
+    { x: 16, y: 3, delay: 280, scale: 1.2 },
+    { x: 23, y: -4, delay: 350, scale: 0.86 },
+    { x: 4, y: 13, delay: 420, scale: 0.68 },
+    { x: -12, y: 14, delay: 490, scale: 0.92 },
+    { x: 13, y: 12, delay: 560, scale: 0.76 },
+    { x: -5, y: -15, delay: 630, scale: 0.62 }
+  ];
+
+  return (
+    <div className="wish-reply-particle-layer" aria-hidden="true">
+      <span
+        className="wish-reply-particle-source"
+        style={{ left: path.startX, top: path.startY } as CSSProperties}
+      />
+      {particles.map((particle, index) => (
+        <span
+          key={index}
+          className="wish-reply-particle"
+          style={
+            {
+              left: path.startX + particle.x,
+              top: path.startY + particle.y,
+              animationDelay: `${particle.delay}ms`,
+              "--wish-particle-x": `${path.deltaX}px`,
+              "--wish-particle-y": `${path.deltaY}px`,
+              "--wish-particle-offset-x": `${particle.x}px`,
+              "--wish-particle-offset-y": `${particle.y}px`,
+              "--wish-particle-scale": particle.scale
+            } as CSSProperties
+          }
+        />
+      ))}
+      <span
+        className="wish-reply-particle-arrival"
+        style={{ left: path.targetX, top: path.targetY } as CSSProperties}
+      />
+    </div>
   );
 }
 
@@ -294,7 +488,7 @@ function UsageMenuRow({
 function MessageBubble({
   message
 }: {
-  message: (typeof messages)[number];
+  message: LocalChatMessage;
 }) {
   const isUser = message.sender === "user";
 

@@ -249,6 +249,43 @@ export function QuotaLimitModal({
   );
 }
 
+export function OutOfStaminaModal({
+  onClose,
+  onUnlock,
+  onSupplement
+}: ModalProps & {
+  onUnlock: () => void;
+  onSupplement: () => void;
+}) {
+  return (
+    <ModalFrame onClose={onClose} compact>
+      <div className="px-5 pb-5 pt-10 text-center">
+        <h2 className="text-[17px] font-bold leading-tight lowercase">out of stamina for today</h2>
+        <p className="mx-auto mt-3 max-w-[255px] text-[13px] leading-[1.45] text-rizzora-muted">
+          Your wish bottle has begun to glow. Come back tomorrow for 10 more free messages.
+        </p>
+        <div className="mt-5 space-y-2">
+          <button
+            type="button"
+            onClick={onUnlock}
+            className="gold-gradient h-11 w-full rounded-lg text-[13px] font-bold text-[#27192c] shadow-[0_0_16px_rgba(242,184,75,0.2)] transition active:scale-[0.98]"
+          >
+            Unlock more chat
+          </button>
+          <button
+            type="button"
+            onClick={onSupplement}
+            className="flex h-9 w-full items-center justify-center gap-1.5 text-[12px] font-semibold text-white/85 transition active:scale-[0.98]"
+          >
+            <Heart size={12} fill="currentColor" className="text-rizzora-pink" />
+            Stamina Supplement
+          </button>
+        </div>
+      </div>
+    </ModalFrame>
+  );
+}
+
 export function SubscriptionModal({ onClose }: ModalProps) {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("yearly");
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanId>("svip");

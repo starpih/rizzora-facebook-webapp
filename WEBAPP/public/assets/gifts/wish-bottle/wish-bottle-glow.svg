@@ -1,0 +1,10 @@
+<svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bottle-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 154) rotate(90) scale(112 105)">
+      <stop stop-color="#FF8BCB" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#FF8BCB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="120" cy="154" rx="105" ry="112" fill="url(#bottle-glow)"/>
+  <path d="M205 97L208 104L215 107L208 110L205 117L202 110L195 107L202 104L205 97Z" fill="#FFF7FC"/>
+</svg>
