@@ -131,17 +131,107 @@ button {
   position: relative;
   flex: 0 0 auto;
   isolation: isolate;
+  opacity: 0.8;
   transition: filter 760ms ease, transform 760ms ease;
 }
 
+.wish-bottle-button {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+
+.wish-bottle-button:active,
+.wish-bottle-button.is-pressed {
+  transform: scale(0.92);
+}
+
+.wish-bottle-button.is-pressed .wish-bottle {
+  filter: drop-shadow(0 0 8px rgba(255, 218, 242, 0.86)) drop-shadow(0 0 18px rgba(255, 105, 202, 0.68));
+  transform: scale(1.06);
+}
+
+.wish-bottle-tap-sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.wish-bottle-tap-spark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #fffafd;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 174, 222, 0.72);
+  animation: wish-bottle-tap-spark 320ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.wish-bottle-tap-spark-one {
+  --spark-x: -19px;
+  --spark-y: -18px;
+}
+
+.wish-bottle-tap-spark-two {
+  --spark-x: 19px;
+  --spark-y: -13px;
+  animation-delay: 35ms;
+}
+
+.wish-bottle-tap-spark-three {
+  --spark-x: 18px;
+  --spark-y: 17px;
+  animation-delay: 65ms;
+}
+
+.wish-bottle-tap-spark-four {
+  --spark-x: -18px;
+  --spark-y: 15px;
+  animation-delay: 20ms;
+}
+
+@keyframes wish-bottle-tap-spark {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(0, 0) scale(0.35);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(calc(var(--spark-x) * 0.2), calc(var(--spark-y) * 0.2)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translate(var(--spark-x), var(--spark-y)) scale(0.6);
+  }
+}
+
+.wish-bottle-hint::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 18px;
+  width: 11px;
+  height: 11px;
+  background: #cac5d6;
+  transform: rotate(45deg);
+  box-shadow: 4px -4px 8px rgba(10, 8, 25, 0.12);
+}
+
 .wish-bottle-sprite {
+  position: relative;
+  z-index: 0;
   display: block;
   width: 100%;
   height: 100%;
-  background-image: url("/assets/gifts/wish-bottle/wish-bottle-heart-3day-progress-v1.png");
-  background-position: var(--wish-sprite-x) var(--wish-sprite-y);
-  background-repeat: no-repeat;
-  background-size: 500% auto;
+  overflow: visible;
 }
 
 .wish-bottle-glow {
@@ -150,6 +240,7 @@ button {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 3;
   opacity: 0.16;
   transform-origin: 50% 55%;
   transition: opacity 760ms ease, transform 760ms ease;

@@ -16,7 +16,8 @@ const mockUser = {
 };
 
 const usage = {
-  dailyFreeMessages: 10,
+  // Demo the complete three-day bottle journey in one session.
+  dailyFreeMessages: 30,
   monthlyCreditsPercent: 68,
   extraCreditsPercent: {
     free: 0,
@@ -54,6 +55,8 @@ export function ChatExperience() {
   const [isVip, setIsVip] = useState(false);
   const [dailyMessagesLeft, setDailyMessagesLeft] = useState(usage.dailyFreeMessages);
   const [staminaModalOpen, setStaminaModalOpen] = useState(false);
+  const [showWishHint, setShowWishHint] = useState(true);
+  const [isBottlePressed, setIsBottlePressed] = useState(false);
   const [draft, setDraft] = useState("");
   const [localMessages, setLocalMessages] = useState<LocalChatMessage[]>([]);
   const [isReplying, setIsReplying] = useState(false);
@@ -162,6 +165,12 @@ export function ChatExperience() {
     }, 850);
   }
 
+  function handleBottleClick() {
+    setShowWishHint(false);
+    setIsBottlePressed(true);
+    window.setTimeout(() => setIsBottlePressed(false), 320);
+  }
+
   return (
     <PhoneShell>
       <div ref={pageRootRef} className="relative flex h-[100svh] flex-col overflow-hidden bg-rizzora-bg">
@@ -215,9 +224,34 @@ export function ChatExperience() {
 
         <div
           ref={bottleAnchorRef}
-          className="pointer-events-none absolute right-4 top-[78px] z-20 drop-shadow-[0_8px_20px_rgba(220,70,160,0.28)]"
+          className="absolute right-4 top-[78px] z-20 drop-shadow-[0_8px_20px_rgba(220,70,160,0.28)]"
         >
-          <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={42} />
+          {showWishHint && (
+            <button
+              type="button"
+              onClick={() => setShowWishHint(false)}
+              className="wish-bottle-hint absolute right-[48px] top-0 z-10 w-[178px] rounded-xl bg-[#CAC5D6] px-3 py-2 text-left text-[10px] leading-[1.35] text-[#000] shadow-[0_6px_18px_rgba(10,8,25,0.38)]"
+            >
+              <span className="block font-semibold text-[#000]">A little wish begins here.</span>
+              <span className="mt-0.5 block text-[#000]">Chat with me to fill your bottle.</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleBottleClick}
+            className={`wish-bottle-button ${isBottlePressed ? "is-pressed" : ""}`}
+            aria-label="View wish bottle progress"
+          >
+            {isBottlePressed && (
+              <span className="wish-bottle-tap-sparks" aria-hidden="true">
+                <span className="wish-bottle-tap-spark wish-bottle-tap-spark-one" />
+                <span className="wish-bottle-tap-spark wish-bottle-tap-spark-two" />
+                <span className="wish-bottle-tap-spark wish-bottle-tap-spark-three" />
+                <span className="wish-bottle-tap-spark wish-bottle-tap-spark-four" />
+              </span>
+            )}
+            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={42} />
+          </button>
         </div>
 
         {particlePath && <ReplyParticleBurst path={particlePath} />}
