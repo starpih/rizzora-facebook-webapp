@@ -126,3 +126,182 @@ button {
 .agreement-shake {
   animation: agreement-shake 260ms ease-in-out;
 }
+
+.wish-bottle {
+  position: relative;
+  flex: 0 0 auto;
+  isolation: isolate;
+  transition: filter 760ms ease, transform 760ms ease;
+}
+
+.wish-bottle-sprite {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url("/assets/gifts/wish-bottle/wish-bottle-heart-3day-progress-v1.png");
+  background-position: var(--wish-sprite-x) var(--wish-sprite-y);
+  background-repeat: no-repeat;
+  background-size: 500% auto;
+}
+
+.wish-bottle-glow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.16;
+  transform-origin: 50% 55%;
+  transition: opacity 760ms ease, transform 760ms ease;
+}
+
+.wish-bottle.is-reply-animating .wish-bottle-glow {
+  opacity: 0.92;
+  transform: scale(1.12);
+  animation: wish-bottle-breathe 1100ms ease-out;
+}
+
+.wish-bottle.is-reply-animating {
+  filter: drop-shadow(0 0 8px rgba(255, 190, 231, 0.72)) drop-shadow(0 0 20px rgba(255, 105, 202, 0.48));
+  transform: scale(1.035);
+}
+
+@keyframes wish-bottle-breathe {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(255, 105, 202, 0));
+  }
+  40% {
+    filter: drop-shadow(0 0 22px rgba(255, 105, 202, 0.82));
+  }
+}
+
+.wish-reply-particle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.wish-reply-particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #fffafd;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.82), 0 0 7px rgba(255, 174, 222, 0.58);
+  will-change: transform, opacity;
+  animation: wish-reply-particle-flow 1350ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.wish-reply-particle-source,
+.wish-reply-particle-arrival {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.82) 0 12%, rgba(255, 184, 226, 0.28) 35%, rgba(255, 255, 255, 0) 72%);
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.wish-reply-particle-source {
+  animation: wish-reply-source-pulse 1350ms ease-out forwards;
+}
+
+.wish-reply-particle-arrival {
+  width: 24px;
+  height: 24px;
+  animation: wish-reply-arrival-pulse 1350ms ease-out forwards;
+}
+
+@keyframes wish-reply-particle-flow {
+  0% {
+    opacity: 0;
+    transform: translate(var(--wish-particle-offset-x), var(--wish-particle-offset-y)) scale(calc(var(--wish-particle-scale) * 0.35));
+  }
+  18% {
+    opacity: 1;
+    transform: translate(var(--wish-particle-offset-x), var(--wish-particle-offset-y)) scale(var(--wish-particle-scale));
+  }
+  78% {
+    opacity: 0.92;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+      calc(var(--wish-particle-x) + var(--wish-particle-offset-x)),
+      calc(var(--wish-particle-y) + var(--wish-particle-offset-y))
+    ) scale(calc(var(--wish-particle-scale) * 0.72));
+  }
+}
+
+@keyframes wish-reply-source-pulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.35);
+  }
+  34% {
+    opacity: 0.32;
+    transform: translate(-50%, -50%) scale(0.72);
+  }
+}
+
+@keyframes wish-reply-arrival-pulse {
+  0%,
+  65%,
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+  82% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wish-bottle-glow,
+  .wish-reply-particle,
+  .wish-reply-particle-source,
+  .wish-reply-particle-arrival {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.reply-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #c9bddf;
+  animation: reply-dot-bounce 900ms ease-in-out infinite;
+}
+
+.reply-dot-delay-1 {
+  animation-delay: 120ms;
+}
+
+.reply-dot-delay-2 {
+  animation-delay: 240ms;
+}
+
+@keyframes reply-dot-bounce {
+  0%,
+  60%,
+  100% {
+    opacity: 0.42;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
