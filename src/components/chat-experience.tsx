@@ -230,7 +230,7 @@ export function ChatExperience() {
             <button
               type="button"
               onClick={() => setShowWishHint(false)}
-              className="wish-bottle-hint absolute right-[48px] top-0 z-10 w-[178px] rounded-xl bg-[#CAC5D6] px-3 py-2 text-left text-[10px] leading-[1.35] text-[#000] shadow-[0_6px_18px_rgba(10,8,25,0.38)]"
+              className="wish-bottle-hint absolute right-[44px] top-0 z-10 w-[178px] rounded-xl bg-[#CAC5D6] px-3 py-2 text-left text-[10px] leading-[1.35] text-[#000] shadow-[0_6px_18px_rgba(10,8,25,0.38)]"
             >
               <span className="block font-semibold text-[#000]">A little wish begins here.</span>
               <span className="mt-0.5 block text-[#000]">Chat with me to fill your bottle.</span>
@@ -250,7 +250,7 @@ export function ChatExperience() {
                 <span className="wish-bottle-tap-spark wish-bottle-tap-spark-four" />
               </span>
             )}
-            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={52} />
+            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={46} />
           </button>
         </div>
 

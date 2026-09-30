@@ -4,7 +4,7 @@ import { type CSSProperties, useId } from "react";
 
 const TOTAL_WISH_REPLIES = 30;
 const HEART_VIEWBOX = "0 0 240 230";
-const HEART_PATH = "M120 214C111 214 106 209 100 204C72 181 28 143 28 89C28 53 54 30 85 30C103 30 114 38 120 51C127 38 138 30 155 30C186 30 212 53 212 89C212 143 168 181 140 204C134 209 129 214 120 214Z";
+const HEART_PATH = "M120 213C111 213 102 206 92 198C52 169 21 132 21 85C21 47 49 24 82 24C99 24 112 33 120 48C128 33 141 24 158 24C191 24 219 47 219 85C219 132 188 169 148 198C138 206 129 213 120 213Z";
 const LIQUID_BOTTOM = 212;
 const LIQUID_USABLE_HEIGHT = 157;
 
@@ -93,9 +93,9 @@ export function WishBottle({
           </g>
           <path className="wish-heart-rim" d={HEART_PATH} fill="none" stroke={`url(#${id}-rim)`} />
           <path className="wish-heart-inner-rim" d={HEART_PATH} fill="none" />
-          <path className="wish-heart-highlight" d="M48 85C50 63 66 48 85 46C96 45 104 48 110 55" />
-          <path className="wish-heart-highlight wish-heart-highlight-small" d="M184 65C194 75 197 89 195 102" />
-          <path className="wish-heart-bottom-glint" d="M100 196C108 201 114 206 120 208C126 206 132 201 140 196" />
+          <path className="wish-heart-highlight" d="M43 86C45 60 63 42 83 40C96 39 106 43 113 52" />
+          <path className="wish-heart-highlight wish-heart-highlight-small" d="M192 64C202 75 205 90 202 103" />
+          <path className="wish-heart-bottom-glint" d="M96 195C105 201 113 205 120 207C127 205 135 201 144 195" />
         </g>
       </svg>
       <span className="wish-bottle-glow" aria-hidden="true" />
