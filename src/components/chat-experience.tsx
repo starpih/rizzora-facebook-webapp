@@ -161,7 +161,7 @@ export function ChatExperience() {
       setIsReplying(false);
       setBottleReplies((replies) => Math.min(30, replies + 1));
       setIsBottleAnimating(true);
-      window.setTimeout(() => setIsBottleAnimating(false), 1450);
+      window.setTimeout(() => setIsBottleAnimating(false), 1500);
     }, 850);
   }
 

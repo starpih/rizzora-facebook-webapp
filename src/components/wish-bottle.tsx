@@ -2,11 +2,11 @@
 
 import { type CSSProperties, useId } from "react";
 
-const TOTAL_BOTTLE_REPLIES = 30;
-const BOTTLE_ASSET = "/assets/gifts/wish-bottle/wish-bottle-glass-cork-v7.png";
-const BOTTLE_VIEWBOX = "0 0 240 260";
-const LIQUID_BOTTOM = 219;
-const LIQUID_USABLE_HEIGHT = 117;
+const TOTAL_WISH_REPLIES = 30;
+const HEART_VIEWBOX = "0 0 240 230";
+const HEART_PATH = "M120 214C111 214 106 209 100 204C72 181 28 143 28 89C28 53 54 30 85 30C103 30 114 38 120 51C127 38 138 30 155 30C186 30 212 53 212 89C212 143 168 181 140 204C134 209 129 214 120 214Z";
+const LIQUID_BOTTOM = 212;
+const LIQUID_USABLE_HEIGHT = 157;
 
 type WishBottleProps = {
   totalReplies: number;
@@ -17,17 +17,21 @@ type WishBottleProps = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-function getBottleState(totalReplies: number) {
-  const replies = clamp(Number.isFinite(totalReplies) ? Math.floor(totalReplies) : 0, 0, TOTAL_BOTTLE_REPLIES);
+function getWishHeartState(totalReplies: number) {
+  const replies = clamp(Number.isFinite(totalReplies) ? Math.floor(totalReplies) : 0, 0, TOTAL_WISH_REPLIES);
   const day = replies === 0 ? 1 : Math.ceil(replies / 10);
-  const dayReply = replies === 0 ? 0 : ((replies - 1) % 10) + 1;
-  // A tiny pool makes the untouched bottle feel like a wish has already begun,
-  // while message one still maps to the full first 10% progress step.
-  const level = replies === 0 ? 0.06 : dayReply / 10;
+  // A reply always triggers the ritual; visible milestones stay calm at chat-header size.
+  // Day three begins at the existing level so the liquid never appears to fall.
+  const milestones: Array<[number, number]> = [
+    [0, 0.055], [1, 0.1], [5, 0.2], [9, 1 / 3], [10, 1 / 3],
+    [11, 0.4], [15, 0.5], [19, 2 / 3], [20, 2 / 3], [21, 2 / 3],
+    [25, 0.8], [30, 0.9]
+  ];
+  const level = [...milestones].reverse().find(([reply]) => replies >= reply)?.[1] ?? 0.055;
   const liquidTop = LIQUID_BOTTOM - LIQUID_USABLE_HEIGHT * level;
-  const liquidColor = day === 1 ? "#f7a9c7" : day === 2 ? "#e65a93" : "#c92f55";
+  const liquidColor = day === 1 ? "#f681b7" : day === 2 ? "#dc4a94" : "#c93472";
 
-  return { day, dayReply, level, liquidTop, liquidColor, replies };
+  return { day, level, liquidTop, liquidColor, replies };
 }
 
 export function WishBottle({
@@ -36,50 +40,65 @@ export function WishBottle({
   size = 120,
   className = ""
 }: WishBottleProps) {
-  const clipId = `wish-liquid-${useId().replace(/:/g, "")}`;
-  const { day, dayReply, level, liquidTop, liquidColor, replies } = getBottleState(totalReplies);
+  const id = `wish-heart-${useId().replace(/:/g, "")}`;
+  const { day, level, liquidTop, liquidColor, replies } = getWishHeartState(totalReplies);
   const style = {
     "--wish-liquid": liquidColor,
-    "--wish-liquid-top": `${liquidTop}px`,
     "--wish-fill": level
   } as CSSProperties;
   const liquidFloor = liquidTop + 6;
-  const backWaveA = `M-24 ${liquidTop + 2} C18 ${liquidTop - 7}, 72 ${liquidTop + 10}, 120 ${liquidTop + 2} S214 ${liquidTop - 7}, 264 ${liquidTop + 2} V260 H-24Z`;
-  const backWaveB = `M-24 ${liquidTop + 6} C24 ${liquidTop + 13}, 80 ${liquidTop - 6}, 120 ${liquidTop + 6} S210 ${liquidTop + 13}, 264 ${liquidTop + 6} V260 H-24Z`;
-  const frontWaveA = `M-24 ${liquidTop} C24 ${liquidTop - 11}, 74 ${liquidTop + 11}, 120 ${liquidTop} S214 ${liquidTop - 11}, 264 ${liquidTop} V260 H-24Z`;
-  const frontWaveB = `M-24 ${liquidTop + 7} C24 ${liquidTop + 16}, 74 ${liquidTop - 9}, 120 ${liquidTop + 7} S214 ${liquidTop + 16}, 264 ${liquidTop + 7} V260 H-24Z`;
+  const backWaveA = `M-24 ${liquidTop + 2}C20 ${liquidTop - 6} 72 ${liquidTop + 9} 120 ${liquidTop + 2}S214 ${liquidTop - 6} 264 ${liquidTop + 2}V230H-24Z`;
+  const backWaveB = `M-24 ${liquidTop + 6}C24 ${liquidTop + 12} 80 ${liquidTop - 5} 120 ${liquidTop + 6}S210 ${liquidTop + 12} 264 ${liquidTop + 6}V230H-24Z`;
+  const frontWaveA = `M-24 ${liquidTop}C24 ${liquidTop - 10} 74 ${liquidTop + 10} 120 ${liquidTop}S214 ${liquidTop - 10} 264 ${liquidTop}V230H-24Z`;
+  const frontWaveB = `M-24 ${liquidTop + 7}C24 ${liquidTop + 15} 74 ${liquidTop - 8} 120 ${liquidTop + 7}S214 ${liquidTop + 15} 264 ${liquidTop + 7}V230H-24Z`;
 
   return (
     <div
       className={`wish-bottle wish-bottle-day-${day} ${isReplyAnimating ? "is-reply-animating" : ""} ${className}`}
-      style={{ ...style, width: size, height: size * 1.08 }}
-      aria-label={`Wish bottle day ${day}, ${dayReply} of 10 messages, ${replies} of ${TOTAL_BOTTLE_REPLIES} total replies`}
+      style={{ ...style, width: size, height: size }}
+      aria-label={`Wish heart day ${day}, ${replies} of ${TOTAL_WISH_REPLIES} replies`}
     >
-      <svg className="wish-bottle-liquid" viewBox={BOTTLE_VIEWBOX} aria-hidden="true" focusable="false">
+      <svg className="wish-bottle-sprite" viewBox={HEART_VIEWBOX} shapeRendering="geometricPrecision" aria-hidden="true" focusable="false">
         <defs>
-          <clipPath id={clipId}>
-            <path d="M30 97 C30 71 50 57 77 57 C97 57 109 70 120 84 C131 70 144 57 164 57 C191 57 210 72 210 98 C210 147 163 190 126 219 C123 221 117 221 114 219 C77 190 30 147 30 97Z" />
+          <clipPath id={`${id}-clip`}>
+            <path d={HEART_PATH} />
           </clipPath>
-          <linearGradient id={`${clipId}-fill`} x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="var(--wish-liquid)" stopOpacity="0.96" />
-            <stop offset="1" stopColor="var(--wish-liquid)" stopOpacity="0.7" />
+          <linearGradient id={`${id}-cavity`} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#f4cfdf" stopOpacity="0.45" />
+            <stop offset="0.52" stopColor="#d18fae" stopOpacity="0.38" />
+            <stop offset="1" stopColor="#8e4b70" stopOpacity="0.58" />
+          </linearGradient>
+          <linearGradient id={`${id}-fill`} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#ffacd0" stopOpacity="0.98" />
+            <stop offset="0.42" stopColor="var(--wish-liquid)" stopOpacity="0.95" />
+            <stop offset="1" stopColor="var(--wish-liquid)" stopOpacity="0.78" />
+          </linearGradient>
+          <linearGradient id={`${id}-rim`} x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stopColor="#e9bfd1" stopOpacity="0.72" />
+            <stop offset="0.44" stopColor="#c88ea9" stopOpacity="0.7" />
+            <stop offset="1" stopColor="#e0afc5" stopOpacity="0.74" />
           </linearGradient>
         </defs>
-        <g clipPath={`url(#${clipId})`}>
-          <rect className="wish-bottle-liquid-fill" x="20" y={liquidFloor} width="200" height={LIQUID_BOTTOM - liquidFloor + 4} fill={`url(#${clipId}-fill)`} />
-          {level > 0 && <>
+        <g transform="translate(0 9) scale(1 0.92)">
+          <path className="wish-heart-cavity" d={HEART_PATH} fill={`url(#${id}-cavity)`} />
+          <g className="wish-heart-liquid" clipPath={`url(#${id}-clip)`}>
+            <rect x="20" y={liquidFloor} width="200" height={LIQUID_BOTTOM - liquidFloor + 4} fill={`url(#${id}-fill)`} />
             <path className="wish-bottle-liquid-wave wish-bottle-liquid-wave-back" d={backWaveA}>
               <animate attributeName="d" dur="2.45s" repeatCount="indefinite" values={`${backWaveA};${backWaveB};${backWaveA}`} />
             </path>
             <path className="wish-bottle-liquid-wave" d={frontWaveA}>
               <animate attributeName="d" dur="2.2s" repeatCount="indefinite" values={`${frontWaveA};${frontWaveB};${frontWaveA}`} />
             </path>
-            <path className="wish-bottle-liquid-shine" d={`M43 ${liquidTop + 8} C78 ${liquidTop + 2}, 102 ${liquidTop + 9}, 134 ${liquidTop + 5}`} />
-          </>}
+            <path className="wish-bottle-liquid-shine" d={`M53 ${liquidTop + 7}C84 ${liquidTop + 2} 112 ${liquidTop + 10} 151 ${liquidTop + 4}`} />
+          </g>
+          <path className="wish-heart-rim" d={HEART_PATH} fill="none" stroke={`url(#${id}-rim)`} />
+          <path className="wish-heart-inner-rim" d={HEART_PATH} fill="none" />
+          <path className="wish-heart-highlight" d="M48 85C50 63 66 48 85 46C96 45 104 48 110 55" />
+          <path className="wish-heart-highlight wish-heart-highlight-small" d="M184 65C194 75 197 89 195 102" />
+          <path className="wish-heart-bottom-glint" d="M100 196C108 201 114 206 120 208C126 206 132 201 140 196" />
         </g>
       </svg>
-      <img className="wish-bottle-frame" src={BOTTLE_ASSET} alt="" aria-hidden="true" />
-      <img className="wish-bottle-glow" src="/assets/gifts/wish-bottle/wish-bottle-glow.svg" alt="" aria-hidden="true" />
+      <span className="wish-bottle-glow" aria-hidden="true" />
     </div>
   );
 }

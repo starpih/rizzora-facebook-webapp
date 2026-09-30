@@ -132,7 +132,11 @@ button {
   flex: 0 0 auto;
   isolation: isolate;
   opacity: 1;
-  transition: filter 760ms ease, transform 760ms ease;
+  transform-origin: 50% 55%;
+  filter: drop-shadow(0 4px 8px rgba(8, 6, 27, 0.46)) drop-shadow(0 1px 3px rgba(238, 122, 181, 0.2));
+  transition: filter 420ms ease;
+  animation: wish-heart-idle 2.5s ease-in-out infinite;
+  will-change: transform, filter;
 }
 
 .wish-bottle-button {
@@ -234,25 +238,53 @@ button {
   overflow: visible;
 }
 
-.wish-bottle-liquid,
-.wish-bottle-frame {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+.wish-heart-cavity {
+  opacity: 0.84;
 }
 
-.wish-bottle-liquid {
-  z-index: 1;
-  overflow: visible;
+.wish-heart-liquid {
   filter: drop-shadow(0 0 2px color-mix(in srgb, var(--wish-liquid) 58%, transparent));
   animation: wish-bottle-liquid-glow 2.7s ease-in-out infinite;
   will-change: filter;
 }
 
-.wish-bottle-liquid-fill {
-  opacity: 0.9;
+.wish-heart-rim {
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.76;
+  filter: drop-shadow(0 0 0.55px rgba(231, 176, 204, 0.66));
+}
+
+.wish-heart-inner-rim {
+  stroke: rgba(235, 189, 212, 0.24);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: scale(0.978);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wish-heart-highlight {
+  fill: none;
+  stroke: rgba(236, 193, 215, 0.42);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+
+.wish-heart-highlight-small {
+  stroke-width: 1.8;
+  opacity: 0.36;
+}
+
+.wish-heart-bottom-glint {
+  fill: none;
+  stroke: rgba(231, 181, 207, 0.36);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  opacity: 0.7;
 }
 
 .wish-bottle-liquid-wave,
@@ -281,13 +313,6 @@ button {
   animation: wish-bottle-liquid-shine 2.2s ease-in-out infinite alternate;
 }
 
-.wish-bottle-frame {
-  z-index: 2;
-  object-fit: contain;
-  opacity: 0.56;
-  mix-blend-mode: screen;
-}
-
 @keyframes wish-bottle-liquid-sway {
   from { transform: translateX(-3px) translateY(1.1px) rotate(-0.9deg); }
   to { transform: translateX(3px) translateY(-1.1px) rotate(0.9deg); }
@@ -307,34 +332,44 @@ button {
   }
 }
 
+@keyframes wish-heart-idle {
+  0%,
+  100% { transform: scale(1); }
+  45% { transform: scale(1.035); }
+  62% { transform: scale(1.012); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .wish-bottle-liquid-wave,
   .wish-bottle-liquid-wave-back,
   .wish-bottle-liquid-shine,
-  .wish-bottle-liquid { animation: none; }
+  .wish-heart-liquid,
+  .wish-bottle { animation: none; }
 }
 
 .wish-bottle-glow {
   position: absolute;
-  inset: 0;
+  inset: -20%;
   width: 100%;
   height: 100%;
   pointer-events: none;
   z-index: 3;
-  opacity: 0.16;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 164, 211, 0.58) 0%, rgba(255, 117, 188, 0.2) 37%, transparent 70%);
+  opacity: 0;
   transform-origin: 50% 55%;
   transition: opacity 760ms ease, transform 760ms ease;
 }
 
 .wish-bottle.is-reply-animating .wish-bottle-glow {
-  opacity: 0.92;
-  transform: scale(1.12);
-  animation: wish-bottle-breathe 1100ms ease-out;
+  opacity: 0.86;
+  transform: scale(1.22);
+  animation: wish-bottle-breathe 1500ms ease-out;
 }
 
 .wish-bottle.is-reply-animating {
   filter: drop-shadow(0 0 8px rgba(255, 190, 231, 0.72)) drop-shadow(0 0 20px rgba(255, 105, 202, 0.48));
-  transform: scale(1.035);
+  animation: wish-heart-reply 1.5s ease-in-out;
 }
 
 @keyframes wish-bottle-breathe {
@@ -345,6 +380,14 @@ button {
   40% {
     filter: drop-shadow(0 0 22px rgba(255, 105, 202, 0.82));
   }
+}
+
+@keyframes wish-heart-reply {
+  0%,
+  100% { transform: scale(1); }
+  24% { transform: scale(1.09); }
+  47% { transform: scale(1.02); }
+  70% { transform: scale(1.07); }
 }
 
 .wish-reply-particle-layer {
