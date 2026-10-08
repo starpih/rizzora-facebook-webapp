@@ -287,7 +287,10 @@ location.reload()
 ```text
 NEXT_PUBLIC_GOOGLE_AUTH_URL=
 NEXT_PUBLIC_PAYMENT_CHECKOUT_URL=
+NEXT_PUBLIC_SHOW_HEART_DEMO=false
 ```
+
+Set `NEXT_PUBLIC_SHOW_HEART_DEMO=true` in the Vercel Preview or Production environment when the heart collection demo controls should be visible there.
 
 ## Implementation Stack
 
@@ -318,4 +321,3 @@ NEXT_PUBLIC_PAYMENT_CHECKOUT_URL=
 - Subscription management API
 - Purchase record API
 - Analytics events
-

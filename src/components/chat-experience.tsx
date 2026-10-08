@@ -90,7 +90,7 @@ export function ChatExperience() {
   const showComposer = true;
   const freeMessagesPercent = Math.max(0, Math.round((dailyMessagesLeft / usage.dailyFreeMessages) * 100));
   const extraCreditsPercent = isVip ? usage.extraCreditsPercent.vip : usage.extraCreditsPercent.free;
-  const isDemoEnabled = process.env.NODE_ENV === "development";
+  const isDemoEnabled = process.env.NODE_ENV === "development" || process.env.NEXT_PUBLIC_SHOW_HEART_DEMO === "true";
   const defaultHeartState: HeartDemoState = {
     mode: isVip ? "vip_active" : "trial",
     fillPercent: isVip ? getVipHeartFillPercent(1) : getTrialHeartFillPercent(bottleReplies),
