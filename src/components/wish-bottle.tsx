@@ -1,6 +1,7 @@
 "use client";
 
 import { type CSSProperties, useId } from "react";
+import { getTrialHeartFillPercent, type HeartMode } from "@/lib/heart-collection";
 
 const TOTAL_WISH_REPLIES = 30;
 const HEART_VIEWBOX = "0 0 240 230";
@@ -9,7 +10,9 @@ const LIQUID_BOTTOM = 212;
 const LIQUID_USABLE_HEIGHT = 157;
 
 type WishBottleProps = {
-  totalReplies: number;
+  totalReplies?: number;
+  fillPercent?: number;
+  mode?: HeartMode;
   isReplyAnimating?: boolean;
   size?: number;
   className?: string;
@@ -17,31 +20,26 @@ type WishBottleProps = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
-function getWishHeartState(totalReplies: number) {
+function getWishHeartState(totalReplies: number, fillPercent?: number, mode?: HeartMode) {
   const replies = clamp(Number.isFinite(totalReplies) ? Math.floor(totalReplies) : 0, 0, TOTAL_WISH_REPLIES);
-  const day = replies === 0 ? 1 : Math.ceil(replies / 10);
-  // A reply always triggers the ritual; visible milestones stay calm at chat-header size.
-  // Day three begins at the existing level so the liquid never appears to fall.
-  const milestones: Array<[number, number]> = [
-    [0, 0.055], [1, 0.1], [5, 0.2], [9, 1 / 3], [10, 1 / 3],
-    [11, 0.4], [15, 0.5], [19, 2 / 3], [20, 2 / 3], [21, 2 / 3],
-    [25, 0.8], [30, 0.9]
-  ];
-  const level = [...milestones].reverse().find(([reply]) => replies >= reply)?.[1] ?? 0.055;
+  const day = mode === "vip_active" || mode === "vip_expired" ? 3 : replies === 0 ? 1 : Math.ceil(replies / 10);
+  const level = fillPercent === undefined ? getTrialHeartFillPercent(replies) / 100 : clamp(fillPercent, 0, 100) / 100;
   const liquidTop = LIQUID_BOTTOM - LIQUID_USABLE_HEIGHT * level;
-  const liquidColor = day === 1 ? "#f681b7" : day === 2 ? "#dc4a94" : "#c93472";
+  const liquidColor = mode === "vip_active" ? "#d44188" : mode === "vip_expired" ? "#b93870" : day === 1 ? "#f681b7" : day === 2 ? "#dc4a94" : "#c93472";
 
   return { day, level, liquidTop, liquidColor, replies };
 }
 
 export function WishBottle({
-  totalReplies,
+  totalReplies = 0,
+  fillPercent,
+  mode,
   isReplyAnimating = false,
   size = 120,
   className = ""
 }: WishBottleProps) {
   const id = `wish-heart-${useId().replace(/:/g, "")}`;
-  const { day, level, liquidTop, liquidColor, replies } = getWishHeartState(totalReplies);
+  const { day, level, liquidTop, liquidColor, replies } = getWishHeartState(totalReplies, fillPercent, mode);
   const style = {
     "--wish-liquid": liquidColor,
     "--wish-fill": level
@@ -56,7 +54,7 @@ export function WishBottle({
     <div
       className={`wish-bottle wish-bottle-day-${day} ${isReplyAnimating ? "is-reply-animating" : ""} ${className}`}
       style={{ ...style, width: size, height: size }}
-      aria-label={`Wish heart day ${day}, ${replies} of ${TOTAL_WISH_REPLIES} replies`}
+      aria-label={`Wish heart ${Math.round(level * 100)}% filled${mode ? `, ${mode.replace("_", " ")}` : `, day ${day}`}`}
     >
       <svg className="wish-bottle-sprite" viewBox={HEART_VIEWBOX} shapeRendering="geometricPrecision" aria-hidden="true" focusable="false">
         <defs>

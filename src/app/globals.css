@@ -350,6 +350,44 @@ button {
   .wish-bottle { animation: none; }
 }
 
+.heart-demo-trigger {
+  position: absolute;
+  bottom: 82px;
+  left: 10px;
+  z-index: 70;
+  border: 1px solid rgba(255, 205, 231, 0.28);
+  border-radius: 999px;
+  background: rgba(45, 38, 72, 0.84);
+  box-shadow: 0 6px 18px rgba(4, 3, 18, 0.36);
+  color: #f2c6db;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 7px 10px;
+  backdrop-filter: blur(8px);
+}
+
+.heart-demo-panel {
+  position: absolute;
+  bottom: 119px;
+  left: 10px;
+  z-index: 70;
+  width: 188px;
+  padding: 11px;
+  border: 1px solid rgba(255, 208, 232, 0.18);
+  border-radius: 14px;
+  background: rgba(36, 31, 61, 0.96);
+  box-shadow: 0 12px 30px rgba(2, 1, 14, 0.42);
+  backdrop-filter: blur(14px);
+}
+
+.heart-demo-panel > p { margin: 0 0 8px; color: #e887bc; font-size: 9px; font-weight: 800; letter-spacing: 0.14em; }
+.heart-demo-section { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.heart-demo-section button { min-height: 27px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 7px; background: rgba(255, 255, 255, 0.06); color: #eeeaf5; font-size: 9px; line-height: 1.15; padding: 4px; }
+.heart-demo-actions { grid-template-columns: 1fr; }
+.heart-demo-actions button { border-color: rgba(239, 124, 184, 0.3); background: rgba(213, 65, 136, 0.14); color: #ffd0e5; }
+.heart-demo-divider { height: 1px; margin: 9px 0; background: rgba(255, 255, 255, 0.1); }
+
 .wish-bottle-glow {
   position: absolute;
   inset: -20%;
@@ -522,4 +560,256 @@ button {
     opacity: 1;
     transform: translateY(-3px);
   }
+}
+
+.wish-jar-entry {
+  position: relative;
+  display: grid;
+  width: 37px;
+  height: 43px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 7px rgba(8, 6, 27, 0.4));
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.wish-jar-entry:active { transform: scale(0.92); }
+
+.wish-jar-entry.is-awaiting {
+  filter: drop-shadow(0 0 7px rgba(255, 143, 202, 0.72)) drop-shadow(0 4px 7px rgba(8, 6, 27, 0.4));
+}
+
+.wish-jar-entry.is-awaiting .wish-jar-art { animation: wish-jar-awaiting 2s ease-in-out infinite; }
+
+.wish-jar-art {
+  position: relative;
+  display: block;
+  width: 112px;
+  height: 108px;
+  overflow: visible;
+  filter: drop-shadow(0 8px 13px rgba(11, 8, 29, 0.34));
+}
+
+.wish-jar-art > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.wish-jar-art.is-compact {
+  width: 39px;
+  height: 36px;
+  overflow: visible;
+  filter: drop-shadow(0 3px 5px rgba(11, 8, 29, 0.42));
+}
+
+.wish-jar-stored-hearts { position: absolute; left: 23%; right: 23%; top: 56%; bottom: 8%; pointer-events: none; }
+.wish-jar-stored-heart { position: absolute; height: auto; object-fit: contain; opacity: 0.84; filter: hue-rotate(320deg) saturate(0.7) brightness(1.4) contrast(0.82) drop-shadow(0 2px 3px rgba(110, 23, 79, 0.32)); }
+.wish-jar-art.is-compact .wish-jar-stored-hearts { opacity: 0.52; filter: blur(1px); transform: scale(0.84); transform-origin: 50% 74%; }
+
+.wish-jar-inline-count {
+  position: absolute;
+  left: 50%;
+  top: 63%;
+  z-index: 2;
+  min-width: 14px;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(44, 13, 44, 0.82), 0 0 6px rgba(255, 169, 215, 0.6);
+}
+
+@keyframes wish-jar-awaiting {
+  0%, 100% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-1px) scale(1.07); }
+}
+
+.wish-jar-drawer {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+}
+
+.wish-jar-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(116, 73, 134, 0.26), rgba(8, 6, 22, 0.8) 70%);
+  backdrop-filter: blur(11px);
+}
+
+.wish-jar-drawer-sheet {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, 348px);
+  min-height: 510px;
+  padding: 0;
+  text-align: center;
+  animation: wish-jar-sheet-in 460ms cubic-bezier(0.22, 0.8, 0.22, 1) both;
+}
+
+.wish-jar-close {
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  z-index: 4;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(68, 54, 100, 0.62);
+  box-shadow: 0 5px 18px rgba(4, 2, 18, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.wish-jar-drawer-aura { display: none; }
+.wish-jar-drawer-star { position: absolute; width: 8px; height: 8px; background: #ffe6f4; box-shadow: 0 0 12px rgba(255, 150, 210, 0.95); clip-path: polygon(50% 0%, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0% 50%, 39% 38%); animation: wish-jar-star 2.8s ease-in-out infinite; }
+.wish-jar-drawer-star.star-one { left: 18%; top: 25%; animation-delay: -0.4s; }
+.wish-jar-drawer-star.star-two { right: 16%; top: 34%; width: 5px; height: 5px; animation-delay: -1.2s; }
+.wish-jar-drawer-star.star-three { left: 26%; top: 56%; width: 5px; height: 5px; animation-delay: -2s; }
+.wish-jar-drawer-star.star-four { right: 27%; top: 60%; animation-delay: -1.6s; }
+
+.wish-jar-drawer-art { position: relative; z-index: 1; display: grid; height: 322px; place-items: center; }
+.wish-jar-drawer-art .wish-jar-art { width: 236px; height: 228px; filter: drop-shadow(0 15px 19px rgba(11, 8, 29, 0.42)); }
+.wish-jar-drawer-copy { position: relative; z-index: 1; width: min(100%, 292px); margin: -46px auto 0; padding: 0 18px; }
+.wish-jar-drawer-copy::before { display: none; }
+.wish-jar-eyebrow { margin: 0 0 8px; color: #f1a8d0; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; }
+.wish-jar-drawer-copy h2 { margin: 0; color: white; font-size: 19px; line-height: 1.25; }
+.wish-jar-drawer-copy > p:last-child { margin: 9px auto 0; max-width: 235px; color: #d1c5dc; font-size: 13px; line-height: 1.45; }
+
+@keyframes wish-jar-sheet-in { from { opacity: 0; transform: translateY(18px) scale(0.94); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes wish-jar-star { 0%, 100% { opacity: 0.25; transform: scale(0.6) rotate(0deg); } 48% { opacity: 1; transform: scale(1.25) rotate(20deg); } }
+
+.heart-collection-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 44%, rgba(89, 46, 96, 0.58), rgba(11, 8, 27, 0.93) 68%);
+  backdrop-filter: blur(11px);
+  animation: heart-collection-overlay-in 420ms ease-out both;
+}
+
+.heart-collection-aura {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 128, 193, 0.24), rgba(255, 128, 193, 0) 68%);
+  animation: heart-collection-aura 2.7s ease-in-out both;
+}
+
+.heart-collection-scene {
+  position: relative;
+  z-index: 1;
+  width: 296px;
+  height: 296px;
+  margin-top: -26px;
+}
+
+.heart-collection-bottle { position: relative; width: 100%; height: 100%; overflow: visible; }
+.heart-collection-jar,
+.heart-collection-inner-light,
+.heart-collection-heart,
+.heart-collection-stored-hearts,
+.heart-collection-stored-heart,
+.heart-collection-cap { position: absolute; }
+
+.heart-collection-jar {
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Preserve the original asset's glass treatment. */
+  opacity: 1;
+  pointer-events: none;
+}
+
+.heart-collection-cap {
+  top: -3.2%;
+  left: 18%;
+  z-index: 5;
+  width: 64%;
+  height: auto;
+  object-fit: contain;
+  transform-origin: 50% 50%;
+  pointer-events: none;
+  animation: heart-collection-cap 3.1s cubic-bezier(0.24, 0.74, 0.24, 1) both;
+}
+.heart-collection-stored-hearts { z-index: 4; left: 24%; right: 24%; top: 58%; bottom: 8%; pointer-events: none; }
+.heart-collection-stored-heart { height: auto; object-fit: contain; opacity: 0.84; filter: hue-rotate(320deg) saturate(0.7) brightness(1.4) contrast(0.82) drop-shadow(0 2px 3px rgba(110, 23, 79, 0.32)); }
+.heart-collection-heart { z-index: 4; top: 24%; left: 50%; width: 72px; height: 72px; margin-left: -36px; object-fit: contain; transform-origin: 50% 80%; filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86); animation: heart-collection-heart 3.1s cubic-bezier(0.18, 0.82, 0.24, 1) both; }
+.heart-collection-inner-light { z-index: 1; top: 57%; left: 50%; width: 170px; height: 124px; margin-left: -85px; border-radius: 50%; background: radial-gradient(circle, rgba(234, 78, 184, 0.5), rgba(234, 78, 184, 0) 70%); opacity: 0; transform-origin: center; animation: heart-collection-light 3.1s ease-in-out both; }
+
+.heart-collection-spark {
+  position: absolute;
+  z-index: 6;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, #ffffff 5%, #ffe5f2 50%, #f28ec8 100%);
+  box-shadow: 0 0 12px rgba(255, 172, 218, 0.94);
+  clip-path: polygon(50% 0%, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0% 50%, 39% 38%);
+  animation: heart-collection-spark 1.55s ease-out both;
+}
+
+.spark-one { left: 99px; top: 185px; animation-delay: 1640ms; }
+.spark-two { right: 96px; top: 198px; animation-delay: 1740ms; }
+.spark-three { left: 122px; top: 232px; animation-delay: 1850ms; }
+.spark-four { right: 116px; top: 169px; animation-delay: 1950ms; }
+
+.heart-collection-copy {
+  position: absolute;
+  z-index: 2;
+  left: 24px;
+  right: 24px;
+  bottom: max(36px, env(safe-area-inset-bottom));
+  text-align: center;
+  animation: heart-collection-copy 2.8s ease-out both;
+}
+
+.heart-collection-copy p { margin: 0; color: white; font-size: 18px; font-weight: 700; }
+.heart-collection-copy span { display: block; margin-top: 8px; color: #d1c5d7; font-size: 13px; }
+
+@keyframes heart-collection-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes heart-collection-aura { 0%, 100% { transform: scale(0.8); opacity: 0; } 42% { transform: scale(1.16); opacity: 1; } 72% { transform: scale(1); opacity: 0.58; } }
+@keyframes heart-collection-cap {
+  0%, 13% { transform: translateY(0) rotate(0) scaleY(0.7); }
+  29%, 59% { transform: translate(2px, -24px) rotate(-4deg) scaleY(0.7); }
+  76% { transform: translateY(-2px) rotate(-0.45deg) scaleY(0.7); }
+  85% { transform: translateY(2px) rotate(0.25deg) scaleY(0.7); }
+  94%, 100% { transform: translateY(0) rotate(0) scaleY(0.7); }
+}
+@keyframes heart-collection-heart {
+  0%, 17% { opacity: 0; transform: translateY(-144px) rotate(-12deg) scale(0.58); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 0 0 rgba(234, 78, 184, 0)); }
+  30% { opacity: 0.86; transform: translateY(-90px) rotate(-7deg) scale(0.76); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 4px 6px rgba(69, 12, 62, 0.18)); }
+  53% { opacity: 0.9; transform: translateY(72px) rotate(5deg) scale(1.03); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 5px 7px rgba(69, 12, 62, 0.2)); }
+  64% { opacity: 0.92; transform: translateY(122px) rotate(-2.8deg) scale(0.9, 1.1); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 0 15px rgba(234, 78, 184, 0.64)); }
+  75% { opacity: 0.9; transform: translateY(88px) rotate(1.6deg) scale(1.02, 0.96); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 0 12px rgba(234, 78, 184, 0.52)); }
+  86% { opacity: 0.88; transform: translateY(106px) rotate(-0.65deg) scale(0.97, 1.02); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 0 10px rgba(234, 78, 184, 0.42)); }
+  100% { opacity: 0.86; transform: translateY(102px) rotate(0) scale(0.99); filter: hue-rotate(320deg) saturate(0.8) brightness(1.3) contrast(0.86) drop-shadow(0 0 8px rgba(234, 78, 184, 0.36)); }
+}
+@keyframes heart-collection-light { 0%, 43% { opacity: 0; transform: scale(0.72); } 64% { opacity: 0.86; transform: scale(1.08); } 78% { opacity: 0.4; transform: scale(0.92); } 100% { opacity: 0.34; transform: scale(0.98); } }
+@keyframes heart-collection-spark { 0% { opacity: 0; transform: scale(0.25) rotate(0deg); } 34% { opacity: 1; transform: scale(1.18) rotate(15deg); } 66% { opacity: 0.62; transform: scale(0.76) rotate(30deg); } 100% { opacity: 0; transform: translateY(-7px) scale(0.4) rotate(45deg); } }
+@keyframes heart-collection-copy { 0%, 56% { opacity: 0; transform: translateY(8px); } 78%, 100% { opacity: 1; transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .wish-jar-entry.is-awaiting .wish-jar-art,
+  .wish-jar-drawer-sheet,
+  .heart-collection-overlay,
+  .heart-collection-aura,
+  .heart-collection-cap,
+  .heart-collection-stored-heart,
+  .heart-collection-heart,
+  .heart-collection-inner-light,
+  .heart-collection-spark,
+  .heart-collection-copy { animation: none !important; }
 }

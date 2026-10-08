@@ -5,10 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronRight, MoreVertical, Send } from "lucide-react";
+import {
+  getTrialHeartFillPercent,
+  getVipHeartFillPercent,
+  type HeartCollectionReason,
+  type HeartDemoState
+} from "@/lib/heart-collection";
 import { companion, messages } from "@/lib/mock-data";
 import { PhoneShell } from "./phone-shell";
 import { AuthModal, OutOfStaminaModal } from "./modals";
 import { WishBottle } from "./wish-bottle";
+import { HeartCollectionOverlay, WishBottleDrawer, WishBottleIcon } from "./wish-bottle-collection";
 
 const mockUser = {
   name: "Mumu",
@@ -48,6 +55,12 @@ type ParticlePath = {
   deltaY: number;
 };
 
+type PendingCollection = {
+  reason: HeartCollectionReason;
+  existingHeartCount: number;
+  nextState: HeartDemoState;
+};
+
 export function ChatExperience() {
   const router = useRouter();
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -62,6 +75,10 @@ export function ChatExperience() {
   const [isReplying, setIsReplying] = useState(false);
   const [bottleReplies, setBottleReplies] = useState(0);
   const [isBottleAnimating, setIsBottleAnimating] = useState(false);
+  const [wishBottleOpen, setWishBottleOpen] = useState(false);
+  const [demoPanelOpen, setDemoPanelOpen] = useState(false);
+  const [demoState, setDemoState] = useState<HeartDemoState | null>(null);
+  const [pendingCollection, setPendingCollection] = useState<PendingCollection | null>(null);
   const pageRootRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLElement>(null);
   const bottleAnchorRef = useRef<HTMLDivElement>(null);
@@ -73,6 +90,16 @@ export function ChatExperience() {
   const showComposer = true;
   const freeMessagesPercent = Math.max(0, Math.round((dailyMessagesLeft / usage.dailyFreeMessages) * 100));
   const extraCreditsPercent = isVip ? usage.extraCreditsPercent.vip : usage.extraCreditsPercent.free;
+  const isDemoEnabled = process.env.NODE_ENV === "development";
+  const defaultHeartState: HeartDemoState = {
+    mode: isVip ? "vip_active" : "trial",
+    fillPercent: isVip ? getVipHeartFillPercent(1) : getTrialHeartFillPercent(bottleReplies),
+    trialMessagesUsed: bottleReplies,
+    vipCycleDay: isVip ? 1 : null,
+    storedHeartCount: 0,
+    pendingRecoveryHeart: false
+  };
+  const activeHeartState = demoState ?? defaultHeartState;
 
   useEffect(() => {
     if (window.localStorage.getItem("rizzora-authenticated") !== "true") {
@@ -171,6 +198,31 @@ export function ChatExperience() {
     window.setTimeout(() => setIsBottlePressed(false), 320);
   }
 
+  function startCollection(reason: HeartCollectionReason, sourceState = activeHeartState) {
+    const completedState = { ...sourceState, fillPercent: 100 };
+    setDemoState(completedState);
+    setPendingCollection({
+      reason,
+      existingHeartCount: sourceState.storedHeartCount,
+      nextState: {
+        mode: "vip_active",
+        fillPercent: getVipHeartFillPercent(1),
+        trialMessagesUsed: 0,
+        vipCycleDay: 1,
+        storedHeartCount: sourceState.storedHeartCount + 1,
+        pendingRecoveryHeart: false
+      }
+    });
+  }
+
+  function finishCollection() {
+    if (!pendingCollection) return;
+    setDemoState(pendingCollection.nextState);
+    setPendingCollection(null);
+    setStaminaModalOpen(false);
+    setIsVip(true);
+  }
+
   return (
     <PhoneShell>
       <div ref={pageRootRef} className="relative flex h-[100svh] flex-col overflow-hidden bg-rizzora-bg">
@@ -201,7 +253,12 @@ export function ChatExperience() {
               <h1 className="text-[17px] font-bold">{companion.name}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3 text-rizzora-muted">
+          <div className="flex items-center gap-2 text-rizzora-muted">
+            <WishBottleIcon
+              storedHeartCount={activeHeartState.storedHeartCount}
+              hasPendingHeart={activeHeartState.pendingRecoveryHeart}
+              onClick={() => setWishBottleOpen(true)}
+            />
             <button
               type="button"
               onClick={() => setShowHeaderMenu((visible) => !visible)}
@@ -233,14 +290,14 @@ export function ChatExperience() {
               className="wish-bottle-hint absolute right-[44px] top-0 z-10 w-[178px] rounded-xl bg-[#CAC5D6] px-3 py-2 text-left text-[10px] leading-[1.35] text-[#000] shadow-[0_6px_18px_rgba(10,8,25,0.38)]"
             >
               <span className="block font-semibold text-[#000]">A little wish begins here.</span>
-              <span className="mt-0.5 block text-[#000]">Chat with me to fill your bottle.</span>
+              <span className="mt-0.5 block text-[#000]">Chat with me to fill your heart.</span>
             </button>
           )}
           <button
             type="button"
             onClick={handleBottleClick}
             className={`wish-bottle-button ${isBottlePressed ? "is-pressed" : ""}`}
-            aria-label="View wish bottle progress"
+            aria-label="View wish heart progress"
           >
             {isBottlePressed && (
               <span className="wish-bottle-tap-sparks" aria-hidden="true">
@@ -250,7 +307,13 @@ export function ChatExperience() {
                 <span className="wish-bottle-tap-spark wish-bottle-tap-spark-four" />
               </span>
             )}
-            <WishBottle totalReplies={bottleReplies} isReplyAnimating={isBottleAnimating} size={46} />
+            <WishBottle
+              totalReplies={activeHeartState.trialMessagesUsed}
+              fillPercent={activeHeartState.fillPercent}
+              mode={activeHeartState.mode}
+              isReplyAnimating={isBottleAnimating}
+              size={46}
+            />
           </button>
         </div>
 
@@ -327,12 +390,103 @@ export function ChatExperience() {
         {staminaModalOpen && (
           <OutOfStaminaModal
             onClose={() => setStaminaModalOpen(false)}
-            onUnlock={() => router.push("/m/vip")}
+            onUnlock={() => isDemoEnabled ? startCollection("trial_upgrade") : router.push("/m/vip")}
             onSupplement={() => router.push("/m/recharge")}
           />
         )}
+        {wishBottleOpen && (
+          <WishBottleDrawer
+            storedHeartCount={activeHeartState.storedHeartCount}
+            hasPendingHeart={activeHeartState.pendingRecoveryHeart}
+            onClose={() => setWishBottleOpen(false)}
+          />
+        )}
+        {pendingCollection && (
+          <HeartCollectionOverlay
+            reason={pendingCollection.reason}
+            existingHeartCount={pendingCollection.existingHeartCount}
+            onComplete={finishCollection}
+          />
+        )}
+        {isDemoEnabled && (
+          <>
+            <button
+              type="button"
+              onClick={() => setDemoPanelOpen((open) => !open)}
+              className="heart-demo-trigger"
+              aria-label="Open heart collection demo controls"
+            >
+              Demo
+            </button>
+            {demoPanelOpen && (
+              <HeartDemoPanel
+                currentState={activeHeartState}
+                onSetState={setDemoState}
+                onCollect={startCollection}
+              />
+            )}
+          </>
+        )}
       </div>
     </PhoneShell>
+  );
+}
+
+function HeartDemoPanel({
+  currentState,
+  onSetState,
+  onCollect
+}: {
+  currentState: HeartDemoState;
+  onSetState: (state: HeartDemoState) => void;
+  onCollect: (reason: HeartCollectionReason, sourceState: HeartDemoState) => void;
+}) {
+  const makeState = (state: Partial<HeartDemoState>): HeartDemoState => ({
+    ...currentState,
+    ...state
+  });
+
+  const trialAt = (messages: number) => makeState({
+    mode: "trial",
+    fillPercent: getTrialHeartFillPercent(messages),
+    trialMessagesUsed: messages,
+    vipCycleDay: null,
+    pendingRecoveryHeart: false
+  });
+
+  const vipAt = (day: number) => makeState({
+    mode: "vip_active",
+    fillPercent: getVipHeartFillPercent(day),
+    trialMessagesUsed: 0,
+    vipCycleDay: day,
+    pendingRecoveryHeart: false
+  });
+
+  const expiredState = makeState({
+    mode: "vip_expired",
+    fillPercent: 98,
+    trialMessagesUsed: 0,
+    vipCycleDay: 31,
+    pendingRecoveryHeart: true
+  });
+
+  return (
+    <aside className="heart-demo-panel" aria-label="Heart collection demo controls">
+      <p>HEART FLOW DEMO</p>
+      <div className="heart-demo-section">
+        <button type="button" onClick={() => onSetState(trialAt(20))}>Trial · 20 / 30</button>
+        <button type="button" onClick={() => onSetState(trialAt(30))}>Trial · 30 / 30</button>
+        <button type="button" onClick={() => onSetState(vipAt(10))}>VIP · Day 10</button>
+        <button type="button" onClick={() => onSetState(vipAt(31))}>VIP · Day 31</button>
+        <button type="button" onClick={() => onSetState(expiredState)}>Membership expired</button>
+      </div>
+      <div className="heart-demo-divider" />
+      <div className="heart-demo-section heart-demo-actions">
+        <button type="button" onClick={() => onCollect("trial_upgrade", trialAt(30))}>Simulate first VIP</button>
+        <button type="button" onClick={() => onCollect("renewal", vipAt(31))}>Simulate renewal</button>
+        <button type="button" onClick={() => onCollect("resubscribe", expiredState)}>Simulate return</button>
+      </div>
+    </aside>
   );
 }
 
